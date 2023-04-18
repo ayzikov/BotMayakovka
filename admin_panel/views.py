@@ -43,7 +43,7 @@ class PieceView(APIView):
 
         else:
             name = get_dict_from_json(val='name', request=request)
-            res = Piece.objects.filter(name__startswith=name).values('description')
+            res = Piece.objects.filter(name__startswith=name).values('description_piece')
 
             return Response(PieceSerializerDesc(res, many=True).data)
 
