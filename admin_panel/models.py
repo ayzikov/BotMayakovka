@@ -8,6 +8,8 @@ class Piece(models.Model):
     description_piece_detailed = models.TextField(verbose_name='Подробнее')
     description_play = models.TextField(verbose_name='О постановке')
     little_known = models.BooleanField(verbose_name='Малоизвестная пьеса')
+    image = models.ImageField(verbose_name='Изображение пьесы',
+                              upload_to='images/')
 
 
     def __str__(self):

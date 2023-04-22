@@ -8,6 +8,7 @@ class PieceSerializerAll(serializers.Serializer):
     description_piece_detailed = serializers.CharField(max_length=9999)
     description_play = serializers.CharField(max_length=9999)
     little_known = serializers.BooleanField()
+    image = serializers.ImageField()
 
 
 class PieceSerializerName(serializers.Serializer):

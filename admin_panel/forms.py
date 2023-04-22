@@ -3,7 +3,16 @@ from django import forms
 class PieceForm(forms.ModelForm):
     class Meta:
         model = Piece
-        fields = ('id', 'name', 'date', 'genre', 'little_known', 'description_piece', 'description_piece_detailed', 'description_play')
+        fields = ('id',
+                  'name',
+                  'date',
+                  'genre',
+                  'little_known',
+                  'description_piece',
+                  'description_piece_detailed',
+                  'description_play',
+                  'image')
+
         widgets = {
             'name': forms.TextInput(),
             'date': forms.NumberInput(),
