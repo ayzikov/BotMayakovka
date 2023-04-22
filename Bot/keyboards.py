@@ -19,14 +19,12 @@ async def info_piece_inline_keyboard(name):
     builder = InlineKeyboardBuilder()
     btn1 = InlineKeyboardButton(text='О пьесе', callback_data=CBF_Pieces(action='about_piece',
                                                                          name=name[:25]).pack())
-    btn2 = InlineKeyboardButton(text='О постановке', callback_data=CBF_Pieces(action='about_prod',
+    btn2 = InlineKeyboardButton(text='О постановке', callback_data=CBF_Pieces(action='about_play',
                                                                               name=name[:25]).pack())
-    btn3 = InlineKeyboardButton(text='Сходить на постановку', callback_data=CBF_Pieces(action='go_to_prod',
-                                                                                       name=name[:25]).pack())
     btn4 = InlineKeyboardButton(text='Главное меню', callback_data=CBF_Pieces(action='back',
                                                                        value='main_menu').pack())
 
-    builder.add(btn1, btn2, btn3, btn4)
+    builder.add(btn1, btn2, btn4)
     builder.adjust(1)
     return builder.as_markup()
 async def all_pieces_inline_keyboard():
@@ -49,7 +47,7 @@ async def mood_pieces_inline_keyboard():
                                                                          value='Жанр1').pack())
     btn2 = InlineKeyboardButton(text='Драммы', callback_data=CBF_Pieces(action='genre',
                                                                         value='Жанр2').pack())
-    btn3 = InlineKeyboardButton(text='Любой жанр, что-то незаезженное', callback_data=CBF_Pieces(action='random_genre').pack())
+    btn3 = InlineKeyboardButton(text='Любой жанр, что-то незаезженное', callback_data=CBF_Pieces(action='non_popular').pack())
     btn4 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back',
                                                                 value='main_menu').pack())
 
@@ -84,5 +82,44 @@ async def back_to_mainmenu_inline_keyboard():
     builder = InlineKeyboardBuilder()
     btn1 = InlineKeyboardButton(text='Главное меню', callback_data=CBF_Pieces(action='back',
                                                                        value='main_menu').pack())
+    builder.add(btn1)
+    return builder.as_markup()
+
+
+async def about_piece_inline_keyboard():
+    builder = InlineKeyboardBuilder()
+    btn1 = InlineKeyboardButton(text='Подробнее', callback_data=CBF_Pieces(action='more').pack())
+    btn2 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back').pack())
+
+    builder.add(btn1, btn2)
+    builder.adjust(1)
+
+    return builder.as_markup()
+
+async def more_about_piece_inline_keyboard():
+    builder = InlineKeyboardBuilder()
+    btn1 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back').pack())
+
+    builder.add(btn1)
+    builder.adjust(1)
+
+    return builder.as_markup()
+
+
+async def about_play_inline_keyboard():
+    builder = InlineKeyboardBuilder()
+    btn1 = InlineKeyboardButton(text='Сходить на постановку', callback_data=CBF_Pieces(action='go_play').pack())
+    btn2 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back').pack())
+
+    builder.add(btn1, btn2)
+    builder.adjust(1)
+
+    return builder.as_markup()
+
+
+async def go_to_the_play_inline_keyboard():
+    builder = InlineKeyboardBuilder()
+    btn1 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back').pack())
+
     builder.add(btn1)
     return builder.as_markup()

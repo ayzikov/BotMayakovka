@@ -93,6 +93,22 @@ async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
     genre = callback_data.value
     murkup = await keyboards.sort_inline_keyboard(sort_by='genre', genre=genre)
     await query.message.edit_text(text=texts.genge_text, reply_markup=murkup)
+
+
+# малоизвестные
+@dp.callback_query(CBF_Pieces.filter(F.action=='non_popular'))
+async def get_non_popular_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
+    murkup = await keyboards.sort_inline_keyboard(sort_by='non_popular')
+    await query.message.edit_text(text=texts.genge_text, reply_markup=murkup)
+
+
+# случайная пьеса
+@dp.callback_query(CBF_Pieces.filter(F.action=='random'))
+async def get_random_piece(query: CallbackQuery):
+    name = await crud.get_pieces(random=True)
+    markup = await keyboards.info_piece_inline_keyboard(name=name)
+    await query.message.edit_text(text=name, reply_markup=markup)
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 
@@ -101,17 +117,40 @@ async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
 async def get_name_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
     name = callback_data.name
     markup = await keyboards.info_piece_inline_keyboard(name=name)
-    text = texts.info_piece_text
-    await query.message.edit_text(text=text, reply_markup=markup)
+    await query.message.edit_text(text=name, reply_markup=markup)
 
 
 # кнопка "О пьесе"
 @dp.callback_query(CBF_Pieces.filter(F.action=='about_piece'))
 async def about_piece(query: CallbackQuery, callback_data: CBF_Pieces):
-    markup = await keyboards.back_to_mainmenu_inline_keyboard()
-    name = callback_data.name
-    text = await crud.get_pieces(name=name)
+    markup = await keyboards.about_piece_inline_keyboard()
+    text = 'Текст о пьесе'
     await query.message.edit_text(text=text, reply_markup=markup)
+
+
+# кнопка "Подробнее"
+@dp.callback_query(CBF_Pieces.filter(F.action=='more'))
+async def more_about_piece(query: CallbackQuery):
+    markup = await keyboards.more_about_piece_inline_keyboard()
+    text = 'Текст подробнее о пьесе'
+    await query.message.edit_text(text=text, reply_markup=markup)
+
+
+# кнопка "О постановке"
+@dp.callback_query(CBF_Pieces.filter(F.action=='about_play'))
+async def about_play(query: CallbackQuery):
+    markup = await keyboards.about_play_inline_keyboard()
+    text = 'Текст о постановке'
+    await query.message.edit_text(text=text, reply_markup=markup)
+
+# кнопка "Сходить на постановку"
+@dp.callback_query(CBF_Pieces.filter(F.action=='go_play'))
+async def go_to_the_play(query: CallbackQuery):
+    markup = await keyboards.go_to_the_play_inline_keyboard()
+    text = 'Ссылка на постановку'
+    await query.message.edit_text(text=text, reply_markup=markup)
+
+
 
 
 
@@ -133,6 +172,7 @@ async def get_btn1_mainmenu(query: CallbackQuery, callback_data: CBF_Pieces):
 
 
 @dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='genre'))
+@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='non_popular'))
 async def get_btn2_mainmenu(query: CallbackQuery, callback_data: CBF_Pieces):
     markup = await keyboards.mood_pieces_inline_keyboard()
     text = texts.mood_pieces_text

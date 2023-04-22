@@ -9,7 +9,7 @@ from .models import Piece
 def get_dict_from_json(val, request):
     json_data = request.body.decode('utf-8')  # преобразование байтовой строки в строку
     data = json.loads(json_data)  # преобразование JSON-строки в словарь Python
-    return data.get(val)  # получение значения по ключу 'name'
+    return data.get(val)  # получение значения по ключу 'val'
 
 
 class PieceView(APIView):
@@ -27,9 +27,8 @@ class PieceView(APIView):
                 :param request: объект Request, содержащий информацию о запросе;
                 :return: объект Response с сериализованными данными.
                 """
-
+        random = get_dict_from_json(val='random', request=request)
         sort_by = get_dict_from_json(val='sort_by', request=request)
-
         if sort_by:
             if sort_by == 'name':
                 res = Piece.objects.all().order_by('name').values('name')
@@ -38,8 +37,14 @@ class PieceView(APIView):
             if sort_by == 'genre':
                 genre = get_dict_from_json(val='genre', request=request)
                 res = Piece.objects.filter(genre=genre).values('name')
+            if sort_by == 'non_popular':
+                res = Piece.objects.filter(little_known=True).values('name')
 
             return Response(PieceSerializerName(res, many=True).data)
+
+        elif random:
+            res = Piece.objects.order_by('?').first()
+            return Response(PieceSerializerName(res).data)
 
         else:
             name = get_dict_from_json(val='name', request=request)
