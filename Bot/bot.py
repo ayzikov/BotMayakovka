@@ -18,16 +18,20 @@ from aiogram import Bot
 from aiogram.filters import Command, Text
 from aiogram.types import Message
 from aiogram.filters.callback_data import CallbackQuery
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.memory import MemoryStorage
 
 
 
 load_dotenv()
 
 token = os.getenv('BOTTOKEN')
+storage = MemoryStorage()
 
 bot = Bot(token)
-dp = Dispatcher()
+dp = Dispatcher(storage=storage)
 logging.basicConfig(level=logging.INFO)
+
 
 # Функция, которая будет вызываться при получении команды /start
 @dp.message(Command(commands=['start']))
@@ -75,38 +79,42 @@ async def mood_pieces(message: Message):
 # ОБРАБОТКА ИНЛАЙН КНОПОК ВЫБОРА СОРТИРОВКИ ПЬЕС ПО АЛФАВИТУ/ДАТЕ/ЖАНРУ/СЛУЧАЙНАЯ ПЬЕСА
 # по алфавиту
 @dp.callback_query(CBF_Pieces.filter(F.action=='alphabet'))
-async def get_alphabet_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
+async def get_alphabet_pieces(query: CallbackQuery, state: FSMContext):
     murkup = await keyboards.sort_inline_keyboard(sort_by='name')
     await query.message.edit_text(text=texts.alphabet_text, reply_markup=murkup)
+    await state.update_data(message=query.message.message_id)
 
 
 # по дате
 @dp.callback_query(CBF_Pieces.filter(F.action=='date'))
-async def get_date_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
+async def get_date_pieces(query: CallbackQuery, state: FSMContext):
     murkup = await keyboards.sort_inline_keyboard(sort_by='date')
     await query.message.edit_text(text=texts.date_text, reply_markup=murkup)
+    await state.update_data(message=query.message.message_id)
 
 
 # по жанру
 @dp.callback_query(CBF_Pieces.filter(F.action=='genre'))
-async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
+async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     genre = callback_data.value
     murkup = await keyboards.sort_inline_keyboard(sort_by='genre', genre=genre)
     await query.message.edit_text(text=texts.genge_text, reply_markup=murkup)
+    await state.update_data(message=query.message.message_id)
 
 
 # малоизвестные
 @dp.callback_query(CBF_Pieces.filter(F.action=='non_popular'))
-async def get_non_popular_pieces(query: CallbackQuery, callback_data: CBF_Pieces):
+async def get_non_popular_pieces(query: CallbackQuery, state: FSMContext):
     murkup = await keyboards.sort_inline_keyboard(sort_by='non_popular')
     await query.message.edit_text(text=texts.genge_text, reply_markup=murkup)
+    await state.update_data(message=query.message.message_id)
 
 
 # случайная пьеса
 @dp.callback_query(CBF_Pieces.filter(F.action=='random'))
 async def get_random_piece(query: CallbackQuery):
     name = await crud.get_pieces(random=True)
-    markup = await keyboards.info_piece_inline_keyboard(name=name)
+    markup = await keyboards.info_piece_inline_keyboard(name=name, random=True)
     await query.message.edit_text(text=name, reply_markup=markup)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -177,6 +185,13 @@ async def get_btn2_mainmenu(query: CallbackQuery, callback_data: CBF_Pieces):
     markup = await keyboards.mood_pieces_inline_keyboard()
     text = texts.mood_pieces_text
     await query.message.edit_text(text=text, reply_markup=markup)
+
+
+@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='state'))
+async def get_state_back(query: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    message = data['message']
+
 
 async def main() -> None:
     await dp.start_polling(bot)

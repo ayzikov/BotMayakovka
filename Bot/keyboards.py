@@ -15,16 +15,23 @@ async def main_menu_keyboard():
 
     return markup
 
-async def info_piece_inline_keyboard(name):
+async def info_piece_inline_keyboard(name, random: bool = False):
+    '''Если значение random передано и является True, то кнопка назад имеет другое значение value'''
     builder = InlineKeyboardBuilder()
     btn1 = InlineKeyboardButton(text='О пьесе', callback_data=CBF_Pieces(action='about_piece',
                                                                          name=name[:25]).pack())
     btn2 = InlineKeyboardButton(text='О постановке', callback_data=CBF_Pieces(action='about_play',
                                                                               name=name[:25]).pack())
-    btn4 = InlineKeyboardButton(text='Главное меню', callback_data=CBF_Pieces(action='back',
-                                                                       value='main_menu').pack())
 
-    builder.add(btn1, btn2, btn4)
+    if random:
+        btn3 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back',
+                                                                           value='name').pack())
+    else:
+        btn3 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back',
+                                                                           value='state').pack())
+
+
+    builder.add(btn1, btn2, btn3)
     builder.adjust(1)
     return builder.as_markup()
 async def all_pieces_inline_keyboard():
@@ -70,7 +77,7 @@ async def sort_inline_keyboard(sort_by: str = None, genre: str = None):
             break
 
         builder.add(InlineKeyboardButton(text=piece_name, callback_data=CBF_Pieces(action='get_piece',
-                                                                                       name=piece_name[:25]).pack()))
+                                                                                   name=piece_name[:25]).pack()))
 
     builder.add(InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back',
                                                                             value=sort_by).pack()))
