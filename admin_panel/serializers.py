@@ -13,6 +13,11 @@ class PieceSerializerAll(serializers.Serializer):
 
 class PieceSerializerName(serializers.Serializer):
     name = serializers.CharField(max_length=100)
+    id = serializers.IntegerField()
 
 class PieceSerializerDesc(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    id = serializers.IntegerField()
     description_piece = serializers.CharField(max_length=9999)
+    description_piece_detailed = serializers.CharField(max_length=9999)
+    description_play = serializers.CharField(max_length=9999)

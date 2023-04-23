@@ -9,7 +9,8 @@ class Piece(models.Model):
     description_play = models.TextField(verbose_name='О постановке')
     little_known = models.BooleanField(verbose_name='Малоизвестная пьеса')
     image = models.ImageField(verbose_name='Изображение пьесы',
-                              upload_to='images/')
+                              upload_to='images/',
+                              blank=True)
 
 
     def __str__(self):
