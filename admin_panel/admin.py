@@ -14,4 +14,5 @@ class ThemeAdmin(admin.ModelAdmin):
                     'description_play',
                     'image')
 
+
     form = PieceForm
