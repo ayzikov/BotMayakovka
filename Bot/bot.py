@@ -105,10 +105,15 @@ async def get_date_pieces(query: CallbackQuery, state: FSMContext):
 async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     genre = callback_data.value
     markup = await keyboards.sort_inline_keyboard(sort_by='genre', genre=genre)
-    await query.message.edit_text(text=texts.genge_text, reply_markup=markup)
+    if callback_data.value == 'Комедия':
+        text = texts.comedi_text
+    else:
+        text = texts.drama_text
+
+    await query.message.edit_text(text=text, reply_markup=markup)
     await state.update_data(message_id=query.message.message_id,
                             markup=markup,
-                            text=texts.genge_text)
+                            text=text)
 
 
 # малоизвестные
@@ -260,7 +265,7 @@ async def get_btn1_mainmenu(query: CallbackQuery):
 
 @dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='genre'))
 @dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='non_popular'))
-async def get_btn2_mainmenu(query: CallbackQuery, callback_data: CBF_Pieces):
+async def get_btn2_mainmenu(query: CallbackQuery):
     markup = await keyboards.mood_pieces_inline_keyboard()
     text = texts.mood_pieces_text
     await query.message.edit_text(text=text, reply_markup=markup)
