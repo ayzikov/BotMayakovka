@@ -51,9 +51,9 @@ async def all_pieces_inline_keyboard():
 async def mood_pieces_inline_keyboard():
     builder = InlineKeyboardBuilder()
     btn1 = InlineKeyboardButton(text='Комедии', callback_data=CBF_Pieces(action='genre',
-                                                                         value='Жанр1').pack())
-    btn2 = InlineKeyboardButton(text='Драммы', callback_data=CBF_Pieces(action='genre',
-                                                                        value='Жанр2').pack())
+                                                                         value='Комедия').pack())
+    btn2 = InlineKeyboardButton(text='Драмы', callback_data=CBF_Pieces(action='genre',
+                                                                        value='Драма').pack())
     btn3 = InlineKeyboardButton(text='Любой жанр, что-то незаезженное', callback_data=CBF_Pieces(action='non_popular').pack())
     btn4 = InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='back',
                                                                        value='main_menu').pack())
