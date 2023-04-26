@@ -1,7 +1,13 @@
 import json
 
+import bot
+
 from aiohttp import ClientSession
 from aiogram.types import FSInputFile
+
+from CBFactories import CBF_Pieces
+from aiogram.filters.callback_data import CallbackQuery
+from aiogram.fsm.context import FSMContext
 
 
 async def get_pieces(sort_by: str = None, genre: str = None, id: int = None, random: bool = False):
@@ -54,3 +60,21 @@ async def get_piece_img_by_id(id: int):
             image_path = await response.json()
             img = FSInputFile(image_path)
             return img
+
+
+async def back_button_with_img(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext, action):
+    '''Функция проверяет какой запрос был у пользователя по темам (алфавит, жанр, дата и тд.)
+    и вызывает соответствующую функцию из bot.py'''
+
+    if action == 'alphabet':
+        await bot.get_alphabet_pieces(query, callback_data, state)
+    elif action == 'date':
+        await bot.get_date_pieces(query, callback_data, state)
+    elif action == 'genre':
+        await bot.get_genre_pieces(query, callback_data, state)
+    elif action == 'non_popular':
+        await bot.get_non_popular_pieces(query, callback_data, state)
+    elif action == 'random':
+        await bot.get_random_piece(query, callback_data, state)
+    else:
+        print(action)

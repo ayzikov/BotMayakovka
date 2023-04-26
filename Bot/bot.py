@@ -81,23 +81,30 @@ async def mood_pieces(message: Message):
 # ОБРАБОТКА ИНЛАЙН КНОПОК ВЫБОРА СОРТИРОВКИ ПЬЕС ПО АЛФАВИТУ/ДАТЕ/ЖАНРУ/СЛУЧАЙНАЯ ПЬЕСА
 # по алфавиту
 @dp.callback_query(CBF_Pieces.filter(F.action=='alphabet'))
-async def get_alphabet_pieces(query: CallbackQuery, state: FSMContext):
+async def get_alphabet_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     markup = await keyboards.sort_inline_keyboard(sort_by='name')
     await query.message.edit_text(text=texts.alphabet_text, reply_markup=markup)
 
+    # запись данных для кнопки назад
     await state.update_data(message_id=query.message.message_id,
                             markup=markup,
                             text=texts.alphabet_text)
 
+    if callback_data.action != 'back':
+        await state.update_data(action=callback_data.action)
 
 # по дате
 @dp.callback_query(CBF_Pieces.filter(F.action=='date'))
-async def get_date_pieces(query: CallbackQuery, state: FSMContext):
+async def get_date_pieces(query: CallbackQuery, callback_data:CBF_Pieces, state: FSMContext):
     markup = await keyboards.sort_inline_keyboard(sort_by='date')
     await query.message.edit_text(text=texts.date_text, reply_markup=markup)
+
     await state.update_data(message_id=query.message.message_id,
                             markup=markup,
                             text=texts.date_text)
+
+    if callback_data.action != 'back':
+        await state.update_data(action=callback_data.action)
 
 
 # по жанру
@@ -111,24 +118,31 @@ async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces, stat
         text = texts.drama_text
 
     await query.message.edit_text(text=text, reply_markup=markup)
+
     await state.update_data(message_id=query.message.message_id,
                             markup=markup,
                             text=text)
 
+    if callback_data.action != 'back':
+        await state.update_data(action=callback_data.action)
 
 # малоизвестные
 @dp.callback_query(CBF_Pieces.filter(F.action=='non_popular'))
-async def get_non_popular_pieces(query: CallbackQuery, state: FSMContext):
+async def get_non_popular_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     markup = await keyboards.sort_inline_keyboard(sort_by='non_popular')
     await query.message.edit_text(text=texts.non_popular_text, reply_markup=markup)
+
     await state.update_data(message_id=query.message.message_id,
                             markup=markup,
                             text=texts.non_popular_text)
 
+    if callback_data.action != 'back':
+        await state.update_data(action=callback_data.action)
+
 
 # случайная пьеса
 @dp.callback_query(CBF_Pieces.filter(F.action=='random'))
-async def get_random_piece(query: CallbackQuery, state: FSMContext):
+async def get_random_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     response = await crud.get_pieces(random=True)
     name = response['name']
     id = response['id']
@@ -153,6 +167,9 @@ async def get_random_piece(query: CallbackQuery, state: FSMContext):
                             chat_id=query.message.chat.id,
                             markup_piece=markup,
                             text_piece=name)
+
+    if callback_data.action != 'back':
+        await state.update_data(action=callback_data.action)
 #-----------------------------------------------------------------------------------------------------------------------
 
 
@@ -272,17 +289,25 @@ async def get_btn2_mainmenu(query: CallbackQuery):
 
 
 @dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='state'))
-async def get_state_back(query: CallbackQuery, state: FSMContext):
+async def get_state_back(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
     data = await state.get_data()
     message_id = data['message_id']
     markup = data['markup']
     text = data['text']
 
-    await bot.edit_message_text(text=text,
-                                chat_id=query.message.chat.id,
-                                message_id=message_id,
-                                reply_markup=markup)
+    try:
+        await bot.edit_message_text(text=text,
+                                    chat_id=query.message.chat.id,
+                                    message_id=message_id,
+                                    reply_markup=markup)
 
+    except:
+        action = data['action']
+
+        await crud.back_button_with_img(query=query,
+                                        callback_data=callback_data,
+                                        state=state,
+                                        action=action)
 
 @dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='state_piece'))
 async def get_state_back(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
