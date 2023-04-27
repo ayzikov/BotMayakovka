@@ -62,7 +62,7 @@ async def get_piece_img_by_id(id: int):
             return img
 
 
-async def back_button_with_img(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext, action):
+async def back_button_with_img(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext, action, value=None):
     '''Функция проверяет какой запрос был у пользователя по темам (алфавит, жанр, дата и тд.)
     и вызывает соответствующую функцию из bot.py'''
 
@@ -71,10 +71,10 @@ async def back_button_with_img(query: CallbackQuery, callback_data: CBF_Pieces, 
     elif action == 'date':
         await bot.get_date_pieces(query, callback_data, state)
     elif action == 'genre':
-        await bot.get_genre_pieces(query, callback_data, state)
+        await bot.get_genre_pieces(query, callback_data, state, value)
     elif action == 'non_popular':
         await bot.get_non_popular_pieces(query, callback_data, state)
     elif action == 'random':
-        await bot.get_random_piece(query, callback_data, state)
+        await bot.all_pieces(query.message)
     else:
         print(action)
