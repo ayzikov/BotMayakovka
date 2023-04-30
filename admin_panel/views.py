@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from .models import Piece
 
 def get_dict_from_json(val, request):
+    '''Функция преобразования json объекта в dict'''
+
     json_data = request.body.decode('utf-8')  # преобразование байтовой строки в строку
     data = json.loads(json_data)  # преобразование JSON-строки в словарь Python
     return data.get(val)  # получение значения по ключу 'val'
@@ -20,18 +22,12 @@ class PieceView(APIView):
                 Поддерживаемые GET-параметры:
                 - sort_by: параметр сортировки (name, date, genre);
                 - genre: жанр произведения (используется только при sort_by=genre);
-                - id: id произведения (используется только при отсутствии sort_by).
-
-                Если sort_by не указан, то возвращает объект Piece, чье имя начинается с указанного в GET-параметре name.
 
                 :param request: объект Request, содержащий информацию о запросе;
                 :return: объект Response с сериализованными данными.
-                """
-        random = get_dict_from_json(val='random', request=request)
-        id = get_dict_from_json(val='id', request=request)
+        """
+
         sort_by = get_dict_from_json(val='sort_by', request=request)
-        description = get_dict_from_json(val='description', request=request)
-        image = get_dict_from_json(val='image', request=request)
 
         if sort_by:
             if sort_by == 'name':
@@ -46,30 +42,43 @@ class PieceView(APIView):
 
             return Response(PieceSerializerName(res, many=True).data)
 
-        elif random:
-            res = Piece.objects.order_by('?').first()
-            return Response(PieceSerializerName(res).data)
-
-        elif image:
-            res = Piece.objects.get(id=id)
-            image_path = res.image.path  # Получаем путь к файлу изображения
-            return Response(image_path)
-
-        elif id and not description:
-            res = Piece.objects.filter(id=id).values('name', 'id')
-            return Response(PieceSerializerName(res, many=True).data)
-
-        elif description:
-            res = Piece.objects.filter(id=id).values('name',
-                                                     'id',
-                                                     'description_piece',
-                                                     'description_piece_detailed',
-                                                     'description_play')
-
-            return Response(PieceSerializerDesc(res, many=True).data)
 
 
+class PieceInfoView(APIView):
+    def get(self, request: Request):
+        '''
+        В методе get происходит извлечение id_piece из тела запроса в формате JSON
+        с помощью функции get_dict_from_json и последующий запрос к базе данных Django
+        для извлечения информации о пьесе по указанному id_piece.
+
+        Полученные данные сериализуются с помощью класса PieceSerializerDesc и возвращаются
+        в виде ответа на GET-запрос в формате JSON с помощью функции Response из Django REST Framework.
+        '''
+        id_piece = get_dict_from_json(val='id_piece', request=request)
+
+        res = Piece.objects.filter(id=id_piece).values('name',
+                                                       'id',
+                                                       'description_piece',
+                                                       'description_piece_detailed',
+                                                       'description_play',
+                                                       'link_play',
+                                                       'link_video')
+
+        return Response(PieceSerializerDesc(res, many=True).data)
 
 
 
+class PieceImgView(APIView):
+    def get(self, request: Request):
+        '''
+        Внутри функции из запроса request извлекается параметр id_piece с помощью функции
+        get_dict_from_json. Затем, с использованием метода get модели Piece,
+        выбирается объект Piece с определенным id_piece. Затем получается путь к изображению
+        объекта Piece с помощью res.image.path.
 
+        В результате функция возвращает Response с путем к изображению в виде строки.
+        '''
+        id_piece = get_dict_from_json(val='id_piece', request=request)
+        res = Piece.objects.get(id=id_piece)
+        image_path = res.image.path
+        return Response(image_path)

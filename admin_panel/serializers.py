@@ -21,3 +21,5 @@ class PieceSerializerDesc(serializers.Serializer):
     description_piece = serializers.CharField(max_length=9999)
     description_piece_detailed = serializers.CharField(max_length=9999)
     description_play = serializers.CharField(max_length=9999)
+    link_play = serializers.CharField(max_length=9999)
+    link_video = serializers.CharField(max_length=9999)
