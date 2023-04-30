@@ -12,6 +12,8 @@ class ThemeAdmin(admin.ModelAdmin):
                     'description_piece',
                     'description_piece_detailed',
                     'description_play',
+                    'link_play',
+                    'link_video',
                     'image')
 
 

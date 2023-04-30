@@ -11,6 +11,8 @@ class PieceForm(forms.ModelForm):
                   'description_piece',
                   'description_piece_detailed',
                   'description_play',
+                  'link_play',
+                  'link_video',
                   'image')
 
         widgets = {
@@ -19,5 +21,7 @@ class PieceForm(forms.ModelForm):
             'genre': forms.TextInput(),
             'description_piece': forms.Textarea(attrs={'rows': 6, 'cols': 60}),
             'description_piece_detailed': forms.Textarea(attrs={'rows': 6, 'cols': 60}),
-            'description_play': forms.Textarea(attrs={'rows': 6, 'cols': 60})
+            'description_play': forms.Textarea(attrs={'rows': 6, 'cols': 60}),
+            'link_play': forms.Textarea(attrs={'rows': 6, 'cols': 60}),
+            'link_video': forms.Textarea(attrs={'rows': 6, 'cols': 60})
         }

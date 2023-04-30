@@ -51,6 +51,7 @@ async def hello_message(message: Message):
     await message.answer(text=text, reply_markup=markup)
 
 @dp.message(Command(commands=['menu']))
+@dp.message(Text(text='Главное меню'))
 async def main_menu(message: Message):
     """
         Обработчик команды /menu
@@ -67,285 +68,188 @@ async def main_menu(message: Message):
 #ОБРАБОТКА КНОПОК ГЛАВНОГО МЕНЮ
 @dp.message(Text(text='Хочу узнать про все пьесы'))
 async def all_pieces(message: Message):
-    markup = await keyboards.all_pieces_inline_keyboard()
+    markup = await keyboards.all_pieces_keyboard()
     text = texts.all_pieces_text
     await message.answer(text=text, reply_markup=markup)
 
 
 @dp.message(Text(text='Хочу пьесу под настроение'))
 async def mood_pieces(message: Message):
-    markup = await keyboards.mood_pieces_inline_keyboard()
+    markup = await keyboards.mood_pieces_keyboard()
     text = texts.mood_pieces_text
     await message.answer(text=text, reply_markup=markup)
 #-----------------------------------------------------------------------------------------------------------------------
-# ОБРАБОТКА ИНЛАЙН КНОПОК ВЫБОРА СОРТИРОВКИ ПЬЕС ПО АЛФАВИТУ/ДАТЕ/ЖАНРУ/СЛУЧАЙНАЯ ПЬЕСА
-# по алфавиту
-@dp.callback_query(CBF_Pieces.filter(F.action=='alphabet'))
-async def get_alphabet_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    markup = await keyboards.sort_inline_keyboard(sort_by='name')
-    await query.message.edit_text(text=texts.alphabet_text, reply_markup=markup)
 
-    # запись данных для кнопки назад
-    await state.update_data(message_id=query.message.message_id,
-                            markup=markup,
-                            text=texts.alphabet_text)
+#ОБРАБОТКА КНОПОК МЕНЮ (про все пьесы)
+# в состояние при нажатии на каждую кнопку записываем sort_by и genre для последующей реализации
+# инлайн кнопок с номерами страниц
+@dp.message(Text(text='По алфавиту'))
+async def sort_alphabet_pieces(message: Message, state: FSMContext):
+    await state.update_data(sort_by='name',
+                            genre=None)
 
-    if callback_data.action != 'back':
-        await state.update_data(action=callback_data.action,
-                                value=callback_data.value)
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by='name')
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
-# по дате
-@dp.callback_query(CBF_Pieces.filter(F.action=='date'))
-async def get_date_pieces(query: CallbackQuery, callback_data:CBF_Pieces, state: FSMContext):
-    markup = await keyboards.sort_inline_keyboard(sort_by='date')
+    await message.answer(text=texts.alphabet_text, reply_markup=markup)
+
+@dp.message(Text(text='По дате'))
+async def sort_date_pieces(message: Message, state: FSMContext):
+    await state.update_data(sort_by='date',
+                            genre=None)
+
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by='date')
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
+
+    await message.answer(text=texts.date_text, reply_markup=markup)
+
+
+@dp.message(Text(text='Случайная пьеса'))
+async def random_piece(message: Message, state: FSMContext):
+    id_piece = await crud.get_random_piece()
+
+    # получили данные о пьесе в виде словаря и ее изображение
+    dict_info_piece = await crud.piece_info_by_id(id_piece)
+    image = await crud.piece_img_by_id(id_piece)
+
+    # записали данные в состояние
+    await state.update_data(dict_info_piece=dict_info_piece)
+
+    # разметка клавиатуры и текст
+    markup = await keyboards.info_piece_inline_keyboard()
+    text = dict_info_piece['description_piece']
+
+    await message.answer_photo(caption=text, photo=image, reply_markup=markup)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+#ОБРАБОТКА КНОПОК МЕНЮ (пьесы под настроение)
+@dp.message(Text(text='Комедии'))
+async def comedy_piece(message: Message, state: FSMContext):
+    await state.update_data(sort_by='genre',
+                            genre='Комедия')
+
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Комедия')
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
+
+    await message.answer(text=texts.date_text, reply_markup=markup)
+
+
+@dp.message(Text(text='Драмы'))
+async def dramas_piece(message: Message, state: FSMContext):
+    await state.update_data(sort_by='genre',
+                            genre='Драма')
+
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Драма')
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
+
+    await message.answer(text=texts.date_text, reply_markup=markup)
+
+
+@dp.message(Text(text='Малоизвестные пьесы'))
+async def non_popular_piece(message: Message, state: FSMContext):
+    await state.update_data(sort_by='non_popular',
+                            genre=None)
+
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by='non_popular')
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
+
+    await message.answer(text=texts.date_text, reply_markup=markup)
+#-----------------------------------------------------------------------------------------------------------------------
+# ОБРАБОТКА ИНЛАЙН КНОПОК С НОМЕРАМИ СТРАНИЦ
+@dp.callback_query(CBF_Pieces.filter(F.action=='page'))
+async def page_selection(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    '''
+    Функция вызывается при нажатии на кнопку с номером страницы
+    data это данные записанные в FSM состоянии
+    Мы получаем оттуда sort_by и genre чтобы вызвать функцию из crud
+    А дальше происходит тоже самое что и при нажатии на одну из кнопок меню, за исключением того что
+    в keyboard передается номер страницы с пьесами которые нужно вывести и сообщение редактируется
+    так как на данном моменте у пользователя висит в чате инлайн клавиатура 
+    '''
+    data = await state.get_data()
+
+    list_dicts_pieces = await crud.get_pieces_sort(sort_by=data['sort_by'],
+                                              genre=data['genre'])
+    markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces,
+                                                    page=callback_data.page_number)
+
     await query.message.edit_text(text=texts.date_text, reply_markup=markup)
-
-    await state.update_data(message_id=query.message.message_id,
-                            markup=markup,
-                            text=texts.date_text)
-
-    if callback_data.action != 'back':
-        await state.update_data(action=callback_data.action,
-                                value=callback_data.value)
-
-
-# по жанру
-@dp.callback_query(CBF_Pieces.filter(F.action=='genre'))
-async def get_genre_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext, value=None):
-    if callback_data.action != 'back':
-        genre = callback_data.value
-    else:
-        genre = value
-
-    markup = await keyboards.sort_inline_keyboard(sort_by='genre', genre=genre)
-    if callback_data.value == 'Комедия' or value == 'Комедия':
-        text = texts.comedi_text
-    else:
-        text = texts.drama_text
-
-    await query.message.edit_text(text=text, reply_markup=markup)
-
-    await state.update_data(message_id=query.message.message_id,
-                            markup=markup,
-                            text=text)
-
-    if callback_data.action != 'back':
-        await state.update_data(action=callback_data.action,
-                                value=callback_data.value)
-
-# малоизвестные
-@dp.callback_query(CBF_Pieces.filter(F.action=='non_popular'))
-async def get_non_popular_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    markup = await keyboards.sort_inline_keyboard(sort_by='non_popular')
-    await query.message.edit_text(text=texts.non_popular_text, reply_markup=markup)
-
-    await state.update_data(message_id=query.message.message_id,
-                            markup=markup,
-                            text=texts.non_popular_text)
-
-    if callback_data.action != 'back':
-        await state.update_data(action=callback_data.action)
-
-
-# случайная пьеса
-@dp.callback_query(CBF_Pieces.filter(F.action=='random'))
-async def get_random_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    response = await crud.get_pieces(random=True)
-    name = response['name']
-    id = response['id']
-
-    markup = await keyboards.info_piece_inline_keyboard(id=id, random=True)
-
-    try:
-        await query.message.edit_text(text=name, reply_markup=markup)
-    except:
-        await query.message.answer(text=name, reply_markup=markup)
-
-    # запись всех данных о выбранной пьесе
-    data = await crud.get_piece_description_by_id(id)
-
-    try:
-        img = await crud.get_piece_img_by_id(id)
-        await state.update_data(img=img)
-    except: pass
-
-    await state.update_data(description_piece=data['description_piece'],
-                            description_piece_detailed=data['description_piece_detailed'],
-                            description_play=data['description_play'])
-
-    # запись данных необходимых для реализации кнопки "Назад"
-    await state.update_data(message_id_piece=query.message.message_id,
-                            chat_id=query.message.chat.id,
-                            markup_piece=markup,
-                            text_piece=name)
-
-    if callback_data.action != 'back':
-        await state.update_data(action=callback_data.action)
 #-----------------------------------------------------------------------------------------------------------------------
-
-
-# ОБРАБОТКА ВЫБОРА КОНКРЕТНОЙ ПЬЕСЫ
+# ОБРАБОТКА ИНЛАЙН КНОПОК С ПЬЕСАМИ
+# при нажатии на пьесу
 @dp.callback_query(CBF_Pieces.filter(F.action=='get_piece'))
-async def get_name_pieces(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    if callback_data.id:
-        id = callback_data.id
-    else:
-        data = await state.get_data()
-        id = data['id_piece']
+async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    '''
 
-    name = await crud.get_piece_name_by_id(id=id)
+    '''
+    # получили данные о пьесе в виде словаря и ее изображение
+    dict_info_piece = await crud.piece_info_by_id(callback_data.id_piece)
+    image = await crud.piece_img_by_id(callback_data.id_piece)
 
-    markup = await keyboards.info_piece_inline_keyboard(id=id)
+    # записали данные в состояние
+    await state.update_data(dict_info_piece=dict_info_piece)
 
-    try:
-        await query.message.edit_text(text=name, reply_markup=markup)
-    except:
-        await query.message.answer(text=name, reply_markup=markup)
+    # разметка клавиатуры и текст
+    markup = await keyboards.info_piece_inline_keyboard()
+    text = dict_info_piece['description_piece']
 
-    # запись всех данных о выбранной пьесе
-    data = await crud.get_piece_description_by_id(id)
-
-    try:
-        img = await crud.get_piece_img_by_id(id)
-        await state.update_data(img=img)
-    except: pass
-
-    await state.update_data(description_piece=data['description_piece'],
-                            description_piece_detailed=data['description_piece_detailed'],
-                            description_play=data['description_play'])
-
-    # запись данных необходимых для реализации кнопки "Назад"
-    await state.update_data(message_id_piece=query.message.message_id,
-                            chat_id=query.message.chat.id,
-                            markup_piece=markup,
-                            text_piece=name,
-                            query=query,
-                            callback_data=callback_data,
-                            id_piece=id)
+    await query.message.answer_photo(caption=text, photo=image, reply_markup=markup)
 
 
-# кнопка "О пьесе"
-@dp.callback_query(CBF_Pieces.filter(F.action=='about_piece'))
-async def about_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    markup = await keyboards.about_piece_inline_keyboard()
+# при нажатии на "Сюжет"
+@dp.callback_query(CBF_Pieces.filter(F.action=='detail'))
+async def get_detail_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    data = await state.get_data()                           # данные из состояния
+    dict_info_piece = data['dict_info_piece']               # словарь с информацией о пьесе
+    text = dict_info_piece['description_piece_detailed']    # текс "Подробнее"
+    id_piece = dict_info_piece['id']                        # id пьесы
 
-    data = await state.get_data()
-    text = data['description_piece']
+    # в клавиатуру передаем id пьесы для реализации кнопки "Назад"
+    markup = await keyboards.detailed_info_piece_inline_keyboard(id_piece)
 
-    try:
-        img = data['img']
-
-        await query.message.delete()
-        await query.message.answer_photo(photo=img, caption=text, reply_markup=markup)
-
-    except:
-        await query.message.edit_text(text=text, reply_markup=markup)
+    await query.message.answer(text=text, reply_markup=markup)
 
 
+# при нажатии на "О постановке"
+@dp.callback_query(CBF_Pieces.filter(F.action=='info_play'))
+async def about_play(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    data = await state.get_data()               # данные из состояния
+    dict_info_piece = data['dict_info_piece']   # словарь с информацией о пьесе
+    text = dict_info_piece['description_play']  # текс "О постановке"
+    id_piece = dict_info_piece['id']            # id пьесы
 
-# кнопка "Подробнее"
-@dp.callback_query(CBF_Pieces.filter(F.action=='more'))
-async def more_about_piece(query: CallbackQuery, state: FSMContext):
-    markup = await keyboards.more_about_piece_inline_keyboard()
+    # в клавиатуру передаем id пьесы для реализации кнопки "Назад"
+    markup = await keyboards.about_play_piece_inline_keyboard(id_piece)
 
-    data = await state.get_data()
-    text = data['description_piece_detailed']
-
-    try:
-        await query.message.edit_text(text=text, reply_markup=markup)
-    except:
-        await query.message.delete()
-        await query.message.answer(text=text, reply_markup=markup)
+    await query.message.answer(text=text, reply_markup=markup)
 
 
-# кнопка "О постановке"
-@dp.callback_query(CBF_Pieces.filter(F.action=='about_play'))
-async def about_play(query: CallbackQuery, state: FSMContext):
-    markup = await keyboards.about_play_inline_keyboard()
-
-    data = await state.get_data()
-    text = data['description_play']
-
-    await query.message.edit_text(text=text, reply_markup=markup)
-
-# кнопка "Сходить на постановку"
+# при нажатии на "Сходить на постановку"
 @dp.callback_query(CBF_Pieces.filter(F.action=='go_play'))
-async def go_to_the_play(query: CallbackQuery):
-    markup = await keyboards.go_to_the_play_inline_keyboard()
-    text = 'Ссылка на постановку'
-    await query.message.edit_text(text=text, reply_markup=markup)
+async def links_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    data = await state.get_data()  # данные из состояния
+    dict_info_piece = data['dict_info_piece']  # словарь с информацией о пьесе
+    link_play = dict_info_piece['link_play']
+    link_video = dict_info_piece['link_video']
+    text = f'Если хотите сходить на постановку, то перейдите по этой ссылке\n' \
+           f'⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️\n\n\n' \
+           f'{link_play}' \
+           f'\n\n\n' \
+           f'Если вам лень куда-то ходить, то можно посмотреть пьесу в записи\n' \
+           f'⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️\n\n\n' \
+           f'{link_video}'
 
 
+    id_piece = dict_info_piece['id']  # id пьесы
 
+    # в клавиатуру передаем id пьесы для реализации кнопки "Назад"
+    markup = await keyboards.go_play_piece_inline_keyboard(id_piece)
 
+    await query.message.answer(text=text, reply_markup=markup)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-# ОБРАБОТКА КНОПОК "НАЗАД"
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='main_menu'))
-async def get_edit_mainmenu(query: CallbackQuery, callback_data: CBF_Pieces):
-    await query.message.delete()
-    await main_menu(query.message)
-
-
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='name'))
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='date'))
-async def get_btn1_mainmenu(query: CallbackQuery):
-    markup = await keyboards.all_pieces_inline_keyboard()
-    text = texts.all_pieces_text
-    await query.message.edit_text(text=text, reply_markup=markup)
-
-
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='genre'))
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='non_popular'))
-async def get_btn2_mainmenu(query: CallbackQuery):
-    markup = await keyboards.mood_pieces_inline_keyboard()
-    text = texts.mood_pieces_text
-    await query.message.edit_text(text=text, reply_markup=markup)
-
-
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='state'))
-async def get_state_back(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    data = await state.get_data()
-    message_id = data['message_id']
-    markup = data['markup']
-    text = data['text']
-
-    try:
-        await bot.edit_message_text(text=text,
-                                    chat_id=query.message.chat.id,
-                                    message_id=message_id,
-                                    reply_markup=markup)
-
-    except:
-        action = data['action']
-        value = data['value']
-
-        await crud.back_button_with_img(query=query,
-                                        callback_data=callback_data,
-                                        state=state,
-                                        action=action,
-                                        value=value)
-
-@dp.callback_query(CBF_Pieces.filter(F.action=='back' and F.value=='state_piece'))
-async def get_state_back(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    data = await state.get_data()
-    message_id = data['message_id_piece']
-    markup = data['markup_piece']
-    text = data['text_piece']
-
-
-    try:
-        await bot.edit_message_text(text=text,
-                                    chat_id=query.message.chat.id,
-                                    message_id=message_id,
-                                    reply_markup=markup)
-    except:
-        await query.message.delete()
-        await get_name_pieces(query, callback_data, state)
-
-
-
 async def main() -> None:
     await dp.start_polling(bot)
 
