@@ -20,6 +20,7 @@ from aiogram.types import Message
 from aiogram.filters.callback_data import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import FSInputFile
 
 
 
@@ -48,7 +49,11 @@ async def hello_message(message: Message):
     # Получаем текст приветственного сообщения
     text = texts.hello_text
 
-    await message.answer(text=text, reply_markup=markup)
+    # получаем гиф изображение
+    gif_path = os.path.abspath('../media/images/Приветствие.mp4')
+    gif = FSInputFile(gif_path)
+
+    await message.answer_animation(caption=text, animation=gif, reply_markup=markup)
 
 @dp.message(Command(commands=['menu']))
 @dp.message(Text(text='Главное меню'))
@@ -78,6 +83,16 @@ async def mood_pieces(message: Message):
     markup = await keyboards.mood_pieces_keyboard()
     text = texts.mood_pieces_text
     await message.answer(text=text, reply_markup=markup)
+
+
+@dp.message(Text(text='Об авторах'))
+async def about_authors(message: Message):
+    # получаем гиф изображение
+    photo_path = os.path.abspath('../media/images/authors.jpg')
+    photo = FSInputFile(photo_path)
+
+    text = texts.about_authors_text
+    await message.answer_photo(caption=text, photo=photo)
 #-----------------------------------------------------------------------------------------------------------------------
 
 #ОБРАБОТКА КНОПОК МЕНЮ (про все пьесы)
@@ -133,7 +148,7 @@ async def comedy_piece(message: Message, state: FSMContext):
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Комедия')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
-    await message.answer(text=texts.date_text, reply_markup=markup)
+    await message.answer(text=texts.comedi_text, reply_markup=markup)
 
 
 @dp.message(Text(text='Драмы'))
@@ -144,7 +159,7 @@ async def dramas_piece(message: Message, state: FSMContext):
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Драма')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
-    await message.answer(text=texts.date_text, reply_markup=markup)
+    await message.answer(text=texts.drama_text, reply_markup=markup)
 
 
 @dp.message(Text(text='Малоизвестные пьесы'))
@@ -155,7 +170,7 @@ async def non_popular_piece(message: Message, state: FSMContext):
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='non_popular')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
-    await message.answer(text=texts.date_text, reply_markup=markup)
+    await message.answer(text=texts.non_popular_text, reply_markup=markup)
 #-----------------------------------------------------------------------------------------------------------------------
 # ОБРАБОТКА ИНЛАЙН КНОПОК С НОМЕРАМИ СТРАНИЦ
 @dp.callback_query(CBF_Pieces.filter(F.action=='page'))
@@ -184,9 +199,8 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
     '''
 
     '''
-    # получили данные о пьесе в виде словаря и ее изображение
+    # получили данные о пьесе в виде словаря
     dict_info_piece = await crud.piece_info_by_id(callback_data.id_piece)
-    image = await crud.piece_img_by_id(callback_data.id_piece)
 
     # записали данные в состояние
     await state.update_data(dict_info_piece=dict_info_piece)
@@ -195,7 +209,14 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
     markup = await keyboards.info_piece_inline_keyboard()
     text = dict_info_piece['description_piece']
 
-    await query.message.answer_photo(caption=text, photo=image, reply_markup=markup)
+    # пробуем получить изображение из БД
+    # Если оно есть, то выводим сообщение с изображением, если нет, то выводим просто текст из БД
+    try:
+        image = await crud.piece_img_by_id(callback_data.id_piece)
+        await query.message.answer_photo(caption=text, photo=image, reply_markup=markup)
+    except:
+        await query.message.answer(text=text, reply_markup=markup)
+
 
 
 # при нажатии на "Сюжет"

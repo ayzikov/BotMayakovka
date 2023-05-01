@@ -4,12 +4,13 @@ import crud
 from aiogram.types import KeyboardButton, InlineKeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, InlineKeyboardBuilder, InlineKeyboardMarkup
 from CBFactories import CBF_Pieces
-from aiogram.fsm.context import FSMContext
+
 async def main_menu_keyboard():
     markup = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text='Хочу узнать про все пьесы')],
-             [KeyboardButton(text='Хочу пьесу под настроение')]
+            [KeyboardButton(text='Хочу пьесу под настроение')],
+            [KeyboardButton(text='Об авторах')]
         ],
         resize_keyboard=True,
         is_persistent=True)

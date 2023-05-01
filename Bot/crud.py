@@ -1,11 +1,14 @@
 import json
+import os
 
 from random import choice
+from dotenv import load_dotenv
 
 from aiohttp import ClientSession
 from aiogram.types import FSInputFile
 
-
+load_dotenv()
+url = os.getenv('URL')
 
 async def get_pieces_sort(sort_by: str = None, genre: str = None):
     '''
@@ -18,7 +21,7 @@ async def get_pieces_sort(sort_by: str = None, genre: str = None):
     data = {'sort_by': sort_by, 'genre': genre}
     json_data = json.dumps(data)
     async with ClientSession() as session:
-        async with session.get('http://127.0.0.1:8000/pieces_sort/', data=json_data) as response:
+        async with session.get(f'{url}/pieces_sort/', data=json_data) as response:
 
             response = await response.json()
             return [{'name': dict_piece['name'], 'id': dict_piece['id']} for dict_piece in response]
@@ -32,7 +35,7 @@ async def piece_info_by_id(id_piece):
     data = {'id_piece': id_piece}
     json_data = json.dumps(data)
     async with ClientSession() as session:
-        async with session.get('http://127.0.0.1:8000/pieces_info/', data=json_data) as response:
+        async with session.get(f'{url}/pieces_info/', data=json_data) as response:
 
             response = await response.json()
             return response[0]
@@ -46,7 +49,7 @@ async def piece_img_by_id(id_piece):
     data = {'id_piece': id_piece}
     json_data = json.dumps(data)
     async with ClientSession() as session:
-        async with session.get('http://127.0.0.1:8000/pieces_img/', data=json_data) as response:
+        async with session.get(f'{url}/pieces_img/', data=json_data) as response:
 
             image_path = await response.json()
             img = FSInputFile(image_path)
