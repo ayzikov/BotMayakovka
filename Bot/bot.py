@@ -210,13 +210,13 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
     text = dict_info_piece['description_piece']
 
     # пробуем получить изображение из БД
-    # Если оно есть, то выводим сообщение с изображением, если нет, то выводим просто текст из БД
+    # Если оно есть, то выводим изображение, если нет, то выводим просто текст из БД
     try:
         image = await crud.piece_img_by_id(callback_data.id_piece)
-        await query.message.answer_photo(caption=text, photo=image, reply_markup=markup)
-    except:
-        await query.message.answer(text=text, reply_markup=markup)
+        await query.message.answer_photo(photo=image)
+    except: pass
 
+    await query.message.answer(text=text, reply_markup=markup)
 
 
 # при нажатии на "Сюжет"
