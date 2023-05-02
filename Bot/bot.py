@@ -91,7 +91,7 @@ async def mood_pieces(message: Message):
     await message.answer(text=text, reply_markup=markup)
 
 
-@dp.message(Text(text='Об авторах'))
+@dp.message(Text(text='Авторы'))
 async def about_authors(message: Message):
     # получаем полный путь к изображению
     current_path = pathlib.Path(__file__).resolve().parents[1]

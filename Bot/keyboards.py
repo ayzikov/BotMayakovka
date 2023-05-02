@@ -10,7 +10,7 @@ async def main_menu_keyboard():
         keyboard=[
             [KeyboardButton(text='Хочу узнать про все пьесы')],
             [KeyboardButton(text='Хочу пьесу под настроение')],
-            [KeyboardButton(text='Об авторах')]
+            [KeyboardButton(text='Авторы')]
         ],
         resize_keyboard=True,
         is_persistent=True)
