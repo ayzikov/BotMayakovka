@@ -1,4 +1,6 @@
 # файлы проекта
+import pathlib
+
 import crud
 import keyboards
 import texts
@@ -9,6 +11,7 @@ from CBFactories import CBF_Pieces
 import logging
 import asyncio
 import os
+from pathlib import Path
 from magic_filter import F
 from dotenv import load_dotenv
 
@@ -49,8 +52,11 @@ async def hello_message(message: Message):
     # Получаем текст приветственного сообщения
     text = texts.hello_text
 
+    # получаем полный путь к гиф изображению
+    current_path = pathlib.Path.cwd().parent
+    gif_path = Path(current_path, 'media', 'images', 'Приветствие.mp4')
+
     # получаем гиф изображение
-    gif_path = os.path.abspath('../media/images/Приветствие.mp4')
     gif = FSInputFile(gif_path)
 
     await message.answer_animation(caption=text, animation=gif, reply_markup=markup)
@@ -87,8 +93,11 @@ async def mood_pieces(message: Message):
 
 @dp.message(Text(text='Об авторах'))
 async def about_authors(message: Message):
-    # получаем гиф изображение
-    photo_path = os.path.abspath('../media/images/authors.jpg')
+    # получаем полный путь к изображению
+    current_path = pathlib.Path.cwd().parent
+    photo_path = Path(current_path, 'media', 'images', 'authors.jpg')
+
+    # получаем изображение
     photo = FSInputFile(photo_path)
 
     text = texts.about_authors_text
