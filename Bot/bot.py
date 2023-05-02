@@ -53,7 +53,7 @@ async def hello_message(message: Message):
     text = texts.hello_text
 
     # получаем полный путь к гиф изображению
-    current_path = pathlib.Path.cwd().parent
+    current_path = pathlib.Path(__file__).resolve().parents[1]
     gif_path = Path(current_path, 'media', 'images', 'Приветствие.mp4')
 
     # получаем гиф изображение
@@ -94,7 +94,7 @@ async def mood_pieces(message: Message):
 @dp.message(Text(text='Об авторах'))
 async def about_authors(message: Message):
     # получаем полный путь к изображению
-    current_path = pathlib.Path.cwd().parent
+    current_path = pathlib.Path(__file__).resolve().parents[1]
     photo_path = Path(current_path, 'media', 'images', 'authors.jpg')
 
     # получаем изображение
