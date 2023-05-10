@@ -36,14 +36,13 @@ storage = MemoryStorage()
 
 bot = Bot(token)
 dp = Dispatcher(storage=storage)
-logging.basicConfig(level=logging.INFO)
 
 # запись логов в файл
-# logging.basicConfig(level=logging.INFO,
-#                     filename='bot_log.txt',
-#                     filemode='w',
-#                     format= '%(asctime)s %(message)s',
-#                     datefmt='%Y-%m-%d %H:%M:%S %Z')
+logging.basicConfig(level=logging.INFO,
+                    filename='bot_log.txt',
+                    filemode='w',
+                    format= '%(asctime)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S %Z')
 
 
 # Функция, которая будет вызываться при получении команды /start
@@ -139,9 +138,16 @@ async def sort_date_pieces(message: Message, state: FSMContext):
 async def random_piece(message: Message, state: FSMContext):
     id_piece = await crud.get_random_piece()
 
-    # получили данные о пьесе в виде словаря и ее изображение
+    # получили данные о пьесе в виде словаря
     dict_info_piece = await crud.piece_info_by_id(id_piece)
-    image = await crud.piece_img_by_id(id_piece)
+
+    # пробуем получить изображение из БД
+    # Если оно есть, то выводим изображение, если нет, то выводим просто текст из БД
+    try:
+        image = await crud.piece_img_by_id(id_piece)
+        await message.answer_photo(photo=image)
+    except:
+        pass
 
     # записали данные в состояние
     await state.update_data(dict_info_piece=dict_info_piece)
@@ -150,7 +156,7 @@ async def random_piece(message: Message, state: FSMContext):
     markup = await keyboards.info_piece_inline_keyboard()
     text = dict_info_piece['description_piece']
 
-    await message.answer_photo(caption=text, photo=image, reply_markup=markup)
+    await message.answer(text=text, reply_markup=markup)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
