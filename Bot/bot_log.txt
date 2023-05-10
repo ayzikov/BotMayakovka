@@ -1,0 +1,57 @@
+2023-05-10 18:22:17 RTZ 2 (çèìà) Start polling
+2023-05-10 18:22:17 RTZ 2 (çèìà) Run polling for bot @ddentistrybot id=6131205838 - 'DentistryBot'
+2023-05-10 18:22:57 RTZ 2 (çèìà) Update id=883246919 is handled. Duration 219 ms by bot id=6131205838
+2023-05-10 18:22:59 RTZ 2 (çèìà) Update id=883246920 is handled. Duration 94 ms by bot id=6131205838
+2023-05-10 18:23:12 RTZ 2 (çèìà) Update id=883246921 is handled. Duration 155 ms by bot id=6131205838
+2023-05-10 18:23:14 RTZ 2 (çèìà) Update id=883246922 is handled. Duration 109 ms by bot id=6131205838
+2023-05-10 18:23:15 RTZ 2 (çèìà) Update id=883246923 is handled. Duration 219 ms by bot id=6131205838
+2023-05-10 18:23:16 RTZ 2 (çèìà) Update id=883246924 is handled. Duration 172 ms by bot id=6131205838
+2023-05-10 18:23:17 RTZ 2 (çèìà) Update id=883246925 is handled. Duration 172 ms by bot id=6131205838
+2023-05-10 18:23:20 RTZ 2 (çèìà) Update id=883246926 is handled. Duration 125 ms by bot id=6131205838
+2023-05-10 18:23:22 RTZ 2 (çèìà) Update id=883246927 is handled. Duration 219 ms by bot id=6131205838
+2023-05-10 18:23:30 RTZ 2 (çèìà) Update id=883246928 is not handled. Duration 77 ms by bot id=6131205838
+2023-05-10 18:23:30 RTZ 2 (çèìà) Cause exception while process update id=883246928 by bot id=6131205838
+TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+Traceback (most recent call last):
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 297, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 146, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 23, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\fsm\middleware.py", line 39, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 264, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 115, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 111, in _wrapped
+    return await self._propagate_event(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 124, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\BotMayakovka\Bot\bot.py", line 206, in page_selection
+    await query.message.edit_text(text=texts.date_text, reply_markup=markup)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\methods\base.py", line 89, in emit
+    return await bot(self)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\bot.py", line 374, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 194, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\aiohttp.py", line 161, in make_request
+    response = self.check_response(method=method, status_code=resp.status, content=raw_result)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 111, in check_response
+    raise TelegramBadRequest(method=method, message=description)
+aiogram.exceptions.TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2023-05-10 18:24:09 RTZ 2 (çèìà) Update id=883246929 is handled. Duration 375 ms by bot id=6131205838
+2023-05-10 18:47:23 RTZ 2 (çèìà) Polling stopped
+2023-05-10 18:47:23 RTZ 2 (çèìà) Polling stopped for bot @ddentistrybot id=6131205838 - 'DentistryBot'

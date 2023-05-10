@@ -38,6 +38,13 @@ bot = Bot(token)
 dp = Dispatcher(storage=storage)
 logging.basicConfig(level=logging.INFO)
 
+# запись логов в файл
+# logging.basicConfig(level=logging.INFO,
+#                     filename='bot_log.txt',
+#                     filemode='w',
+#                     format= '%(asctime)s %(message)s',
+#                     datefmt='%Y-%m-%d %H:%M:%S %Z')
+
 
 # Функция, которая будет вызываться при получении команды /start
 @dp.message(Command(commands=['start']))
