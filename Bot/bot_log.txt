@@ -1,0 +1,9 @@
+2023-05-10 20:06:55 RTZ 2 (çèìà) Start polling
+2023-05-10 20:06:55 RTZ 2 (çèìà) Run polling for bot @ddentistrybot id=6131205838 - 'DentistryBot'
+2023-05-10 20:06:55 RTZ 2 (çèìà) Update id=883247058 is handled. Duration 594 ms by bot id=6131205838
+2023-05-10 20:06:59 RTZ 2 (çèìà) Update id=883247059 is handled. Duration 484 ms by bot id=6131205838
+2023-05-10 20:07:03 RTZ 2 (çèìà) Update id=883247060 is handled. Duration 719 ms by bot id=6131205838
+2023-05-10 20:07:06 RTZ 2 (çèìà) Update id=883247061 is handled. Duration 484 ms by bot id=6131205838
+2023-05-10 20:07:10 RTZ 2 (çèìà) Update id=883247062 is handled. Duration 452 ms by bot id=6131205838
+2023-05-10 20:07:12 RTZ 2 (çèìà) Update id=883247063 is handled. Duration 563 ms by bot id=6131205838
+2023-05-10 20:07:26 RTZ 2 (çèìà) Update id=883247064 is handled. Duration 359 ms by bot id=6131205838

@@ -73,7 +73,12 @@ async def pieces_inline_keyboard(list_dicts_pieces, page: int = 1):
     # записываются в список чтобы вывести их на одной строке
     buttons_pages_numbers = []
     for page_number in range(1, quantity_pages + 1):
-        buttons_pages_numbers.append(InlineKeyboardButton(text=page_number, callback_data=CBF_Pieces(action='page',
+        # номер страницы на которой пользователь находится в данный момент будет подчеркнут
+        if page == page_number:
+            text = f"-{page_number}-"
+        else:
+            text = page_number
+        buttons_pages_numbers.append(InlineKeyboardButton(text=text, callback_data=CBF_Pieces(action='page',
                                                                                                   page_number=page_number).pack()))
 
     builder.row(*buttons_pages_numbers) # добавляем инлайн кнопки с номерами страниц на одну строку
