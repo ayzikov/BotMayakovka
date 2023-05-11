@@ -113,10 +113,12 @@ async def about_authors(message: Message):
 #ОБРАБОТКА КНОПОК МЕНЮ (про все пьесы)
 # в состояние при нажатии на каждую кнопку записываем sort_by и genre для последующей реализации
 # инлайн кнопок с номерами страниц
+# в последующем эти действия повторяются для всех кнопок вывода списка пьес
 @dp.message(Text(text='По алфавиту'))
 async def sort_alphabet_pieces(message: Message, state: FSMContext):
     await state.update_data(sort_by='name',
-                            genre=None)
+                            genre=None,
+                            text=texts.alphabet_text)
 
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='name')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
@@ -126,7 +128,8 @@ async def sort_alphabet_pieces(message: Message, state: FSMContext):
 @dp.message(Text(text='По дате'))
 async def sort_date_pieces(message: Message, state: FSMContext):
     await state.update_data(sort_by='date',
-                            genre=None)
+                            genre=None,
+                            text=texts.date_text)
 
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='date')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
@@ -165,7 +168,8 @@ async def random_piece(message: Message, state: FSMContext):
 @dp.message(Text(text='Комедии'))
 async def comedy_piece(message: Message, state: FSMContext):
     await state.update_data(sort_by='genre',
-                            genre='Комедия')
+                            genre='Комедия',
+                            text=texts.comedi_text)
 
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Комедия')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
@@ -176,7 +180,8 @@ async def comedy_piece(message: Message, state: FSMContext):
 @dp.message(Text(text='Драмы'))
 async def dramas_piece(message: Message, state: FSMContext):
     await state.update_data(sort_by='genre',
-                            genre='Драма')
+                            genre='Драма',
+                            text=texts.drama_text)
 
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Драма')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
@@ -187,7 +192,8 @@ async def dramas_piece(message: Message, state: FSMContext):
 @dp.message(Text(text='Малоизвестные пьесы'))
 async def non_popular_piece(message: Message, state: FSMContext):
     await state.update_data(sort_by='non_popular',
-                            genre=None)
+                            genre=None,
+                            text=texts.non_popular_text)
 
     list_dicts_pieces = await crud.get_pieces_sort(sort_by='non_popular')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
@@ -212,7 +218,7 @@ async def page_selection(query: CallbackQuery, callback_data: CBF_Pieces, state:
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces,
                                                     page=callback_data.page_number)
 
-    await query.message.edit_text(text=texts.date_text, reply_markup=markup)
+    await query.message.edit_text(text=data['text'], reply_markup=markup)
 #-----------------------------------------------------------------------------------------------------------------------
 # ОБРАБОТКА ИНЛАЙН КНОПОК С ПЬЕСАМИ
 # при нажатии на пьесу

@@ -1,9 +1,128 @@
-2023-05-10 20:06:55 RTZ 2 (çèìà) Start polling
-2023-05-10 20:06:55 RTZ 2 (çèìà) Run polling for bot @ddentistrybot id=6131205838 - 'DentistryBot'
-2023-05-10 20:06:55 RTZ 2 (çèìà) Update id=883247058 is handled. Duration 594 ms by bot id=6131205838
-2023-05-10 20:06:59 RTZ 2 (çèìà) Update id=883247059 is handled. Duration 484 ms by bot id=6131205838
-2023-05-10 20:07:03 RTZ 2 (çèìà) Update id=883247060 is handled. Duration 719 ms by bot id=6131205838
-2023-05-10 20:07:06 RTZ 2 (çèìà) Update id=883247061 is handled. Duration 484 ms by bot id=6131205838
-2023-05-10 20:07:10 RTZ 2 (çèìà) Update id=883247062 is handled. Duration 452 ms by bot id=6131205838
-2023-05-10 20:07:12 RTZ 2 (çèìà) Update id=883247063 is handled. Duration 563 ms by bot id=6131205838
-2023-05-10 20:07:26 RTZ 2 (çèìà) Update id=883247064 is handled. Duration 359 ms by bot id=6131205838
+2023-05-11 19:24:23 RTZ 2 (çèìà) Start polling
+2023-05-11 19:24:23 RTZ 2 (çèìà) Run polling for bot @ddentistrybot id=6131205838 - 'DentistryBot'
+2023-05-11 19:24:24 RTZ 2 (çèìà) Update id=883247107 is handled. Duration 187 ms by bot id=6131205838
+2023-05-11 19:24:25 RTZ 2 (çèìà) Update id=883247108 is handled. Duration 94 ms by bot id=6131205838
+2023-05-11 19:24:26 RTZ 2 (çèìà) Update id=883247109 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:24:28 RTZ 2 (çèìà) Update id=883247110 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:24:30 RTZ 2 (çèìà) Update id=883247111 is handled. Duration 92 ms by bot id=6131205838
+2023-05-11 19:24:32 RTZ 2 (çèìà) Update id=883247112 is not handled. Duration 77 ms by bot id=6131205838
+2023-05-11 19:24:32 RTZ 2 (çèìà) Cause exception while process update id=883247112 by bot id=6131205838
+TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+Traceback (most recent call last):
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 297, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 146, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 23, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\fsm\middleware.py", line 39, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 264, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 115, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 111, in _wrapped
+    return await self._propagate_event(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 124, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\BotMayakovka\Bot\bot.py", line 220, in page_selection
+    await query.message.edit_text(text=data['text'], reply_markup=markup)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\methods\base.py", line 89, in emit
+    return await bot(self)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\bot.py", line 374, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 194, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\aiohttp.py", line 161, in make_request
+    response = self.check_response(method=method, status_code=resp.status, content=raw_result)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 111, in check_response
+    raise TelegramBadRequest(method=method, message=description)
+aiogram.exceptions.TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2023-05-11 19:24:33 RTZ 2 (çèìà) Update id=883247113 is not handled. Duration 62 ms by bot id=6131205838
+2023-05-11 19:24:33 RTZ 2 (çèìà) Cause exception while process update id=883247113 by bot id=6131205838
+TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+Traceback (most recent call last):
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 297, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 146, in feed_update
+    response = await self.update.wrap_outer_middleware(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 23, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\fsm\middleware.py", line 39, in __call__
+    return await handler(event, data)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 264, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 115, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 111, in _wrapped
+    return await self._propagate_event(
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\router.py", line 124, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\telegram.py", line 123, in trigger
+    return await wrapped_inner(event, kwargs)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\BotMayakovka\Bot\bot.py", line 220, in page_selection
+    await query.message.edit_text(text=data['text'], reply_markup=markup)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\methods\base.py", line 89, in emit
+    return await bot(self)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\bot.py", line 374, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 194, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\aiohttp.py", line 161, in make_request
+    response = self.check_response(method=method, status_code=resp.status, content=raw_result)
+  File "C:\Users\asfdwef\PycharmProjects\Mayakovka\venv\lib\site-packages\aiogram\client\session\base.py", line 111, in check_response
+    raise TelegramBadRequest(method=method, message=description)
+aiogram.exceptions.TelegramBadRequest: Telegram server says Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2023-05-11 19:24:34 RTZ 2 (çèìà) Update id=883247114 is handled. Duration 140 ms by bot id=6131205838
+2023-05-11 19:24:36 RTZ 2 (çèìà) Update id=883247115 is handled. Duration 156 ms by bot id=6131205838
+2023-05-11 19:24:38 RTZ 2 (çèìà) Update id=883247116 is handled. Duration 93 ms by bot id=6131205838
+2023-05-11 19:24:39 RTZ 2 (çèìà) Update id=883247117 is handled. Duration 125 ms by bot id=6131205838
+2023-05-11 19:24:43 RTZ 2 (çèìà) Update id=883247118 is handled. Duration 92 ms by bot id=6131205838
+2023-05-11 19:24:44 RTZ 2 (çèìà) Update id=883247119 is handled. Duration 125 ms by bot id=6131205838
+2023-05-11 19:24:45 RTZ 2 (çèìà) Update id=883247120 is handled. Duration 141 ms by bot id=6131205838
+2023-05-11 19:24:46 RTZ 2 (çèìà) Update id=883247121 is handled. Duration 234 ms by bot id=6131205838
+2023-05-11 19:24:47 RTZ 2 (çèìà) Update id=883247122 is handled. Duration 297 ms by bot id=6131205838
+2023-05-11 19:24:48 RTZ 2 (çèìà) Update id=883247123 is handled. Duration 108 ms by bot id=6131205838
+2023-05-11 19:24:49 RTZ 2 (çèìà) Update id=883247124 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:24:50 RTZ 2 (çèìà) Update id=883247125 is handled. Duration 77 ms by bot id=6131205838
+2023-05-11 19:24:52 RTZ 2 (çèìà) Update id=883247126 is handled. Duration 78 ms by bot id=6131205838
+2023-05-11 19:24:53 RTZ 2 (çèìà) Update id=883247127 is handled. Duration 359 ms by bot id=6131205838
+2023-05-11 19:35:05 RTZ 2 (çèìà) Update id=883247128 is handled. Duration 202 ms by bot id=6131205838
+2023-05-11 19:35:06 RTZ 2 (çèìà) Update id=883247129 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:35:08 RTZ 2 (çèìà) Update id=883247130 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:35:08 RTZ 2 (çèìà) Update id=883247131 is handled. Duration 140 ms by bot id=6131205838
+2023-05-11 19:35:09 RTZ 2 (çèìà) Update id=883247132 is handled. Duration 157 ms by bot id=6131205838
+2023-05-11 19:35:10 RTZ 2 (çèìà) Update id=883247133 is handled. Duration 172 ms by bot id=6131205838
+2023-05-11 19:35:11 RTZ 2 (çèìà) Update id=883247134 is handled. Duration 140 ms by bot id=6131205838
+2023-05-11 19:35:11 RTZ 2 (çèìà) Update id=883247135 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:35:13 RTZ 2 (çèìà) Update id=883247136 is handled. Duration 750 ms by bot id=6131205838
+2023-05-11 19:35:22 RTZ 2 (çèìà) Update id=883247137 is handled. Duration 77 ms by bot id=6131205838
+2023-05-11 19:35:23 RTZ 2 (çèìà) Update id=883247138 is handled. Duration 77 ms by bot id=6131205838
+2023-05-11 19:36:04 RTZ 2 (çèìà) Update id=883247139 is handled. Duration 172 ms by bot id=6131205838
+2023-05-11 19:36:08 RTZ 2 (çèìà) Update id=883247140 is handled. Duration 170 ms by bot id=6131205838
+2023-05-11 19:36:08 RTZ 2 (çèìà) Update id=883247141 is handled. Duration 93 ms by bot id=6131205838
+2023-05-11 19:36:11 RTZ 2 (çèìà) Update id=883247142 is handled. Duration 202 ms by bot id=6131205838
+2023-05-11 19:36:12 RTZ 2 (çèìà) Update id=883247143 is handled. Duration 219 ms by bot id=6131205838
+2023-05-11 19:36:13 RTZ 2 (çèìà) Update id=883247144 is handled. Duration 92 ms by bot id=6131205838
+2023-05-11 19:36:16 RTZ 2 (çèìà) Update id=883247145 is handled. Duration 109 ms by bot id=6131205838
+2023-05-11 19:36:17 RTZ 2 (çèìà) Update id=883247146 is handled. Duration 218 ms by bot id=6131205838
+2023-05-11 19:39:02 RTZ 2 (çèìà) Polling stopped
+2023-05-11 19:39:02 RTZ 2 (çèìà) Polling stopped for bot @ddentistrybot id=6131205838 - 'DentistryBot'
