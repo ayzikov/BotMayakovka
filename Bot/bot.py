@@ -82,6 +82,12 @@ async def main_menu(message: Message):
     await message.answer(text=text, reply_markup=markup)
 
 
+@dp.message(Command(commands=['sources']))
+async def sources(message: Message):
+    text = texts.text_sources
+    await message.answer(text=text, disable_web_page_preview=True)
+
+
 #ОБРАБОТКА КНОПОК ГЛАВНОГО МЕНЮ
 @dp.message(Text(text='Хочу узнать про все пьесы'))
 async def all_pieces(message: Message):
@@ -296,7 +302,7 @@ async def links_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FS
     # в клавиатуру передаем id пьесы для реализации кнопки "Назад"
     markup = await keyboards.go_play_piece_inline_keyboard(id_piece)
 
-    await query.message.answer(text=text, reply_markup=markup)
+    await query.message.answer(text=text, reply_markup=markup, disable_web_page_preview=True)
 
 #-----------------------------------------------------------------------------------------------------------------------
 async def main() -> None:
