@@ -1,5 +1,5 @@
 import asyncio
-import crud
+import crud_pieces
 
 from aiogram.types import KeyboardButton, InlineKeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, InlineKeyboardBuilder, InlineKeyboardMarkup

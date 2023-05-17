@@ -1,7 +1,7 @@
 # файлы проекта
 import pathlib
 
-import crud
+import crud_pieces
 import keyboards
 import texts
 
@@ -126,7 +126,7 @@ async def sort_alphabet_pieces(message: Message, state: FSMContext):
                             genre=None,
                             text=texts.alphabet_text)
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by='name')
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by='name')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
     await message.answer(text=texts.alphabet_text, reply_markup=markup)
@@ -137,7 +137,7 @@ async def sort_date_pieces(message: Message, state: FSMContext):
                             genre=None,
                             text=texts.date_text)
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by='date')
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by='date')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
     await message.answer(text=texts.date_text, reply_markup=markup)
@@ -145,15 +145,15 @@ async def sort_date_pieces(message: Message, state: FSMContext):
 
 @dp.message(Text(text='Случайная пьеса'))
 async def random_piece(message: Message, state: FSMContext):
-    id_piece = await crud.get_random_piece()
+    id_piece = await crud_pieces.get_random_piece()
 
     # получили данные о пьесе в виде словаря
-    dict_info_piece = await crud.piece_info_by_id(id_piece)
+    dict_info_piece = await crud_pieces.piece_info_by_id(id_piece)
 
     # пробуем получить изображение из БД
     # Если оно есть, то выводим изображение, если нет, то выводим просто текст из БД
     try:
-        image = await crud.piece_img_by_id(id_piece)
+        image = await crud_pieces.piece_img_by_id(id_piece)
         await message.answer_photo(photo=image)
     except:
         pass
@@ -177,7 +177,7 @@ async def comedy_piece(message: Message, state: FSMContext):
                             genre='Комедия',
                             text=texts.comedi_text)
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Комедия')
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by='genre', genre='Комедия')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
     await message.answer(text=texts.comedi_text, reply_markup=markup)
@@ -189,7 +189,7 @@ async def dramas_piece(message: Message, state: FSMContext):
                             genre='Драма',
                             text=texts.drama_text)
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by='genre', genre='Драма')
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by='genre', genre='Драма')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
     await message.answer(text=texts.drama_text, reply_markup=markup)
@@ -201,7 +201,7 @@ async def non_popular_piece(message: Message, state: FSMContext):
                             genre=None,
                             text=texts.non_popular_text)
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by='non_popular')
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by='non_popular')
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces)
 
     await message.answer(text=texts.non_popular_text, reply_markup=markup)
@@ -212,14 +212,14 @@ async def page_selection(query: CallbackQuery, callback_data: CBF_Pieces, state:
     '''
     Функция вызывается при нажатии на кнопку с номером страницы
     data это данные записанные в FSM состоянии
-    Мы получаем оттуда sort_by и genre чтобы вызвать функцию из crud
+    Мы получаем оттуда sort_by и genre чтобы вызвать функцию из crud_pieces
     А дальше происходит тоже самое что и при нажатии на одну из кнопок меню, за исключением того что
     в keyboard передается номер страницы с пьесами которые нужно вывести и сообщение редактируется
     так как на данном моменте у пользователя висит в чате инлайн клавиатура 
     '''
     data = await state.get_data()
 
-    list_dicts_pieces = await crud.get_pieces_sort(sort_by=data['sort_by'],
+    list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by=data['sort_by'],
                                               genre=data['genre'])
     markup = await keyboards.pieces_inline_keyboard(list_dicts_pieces,
                                                     page=callback_data.page_number)
@@ -234,7 +234,7 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
 
     '''
     # получили данные о пьесе в виде словаря
-    dict_info_piece = await crud.piece_info_by_id(callback_data.id_piece)
+    dict_info_piece = await crud_pieces.piece_info_by_id(callback_data.id_piece)
 
     # записали данные в состояние
     await state.update_data(dict_info_piece=dict_info_piece)
@@ -246,7 +246,7 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
     # пробуем получить изображение из БД
     # Если оно есть, то выводим изображение, если нет, то выводим просто текст из БД
     try:
-        image = await crud.piece_img_by_id(callback_data.id_piece)
+        image = await crud_pieces.piece_img_by_id(callback_data.id_piece)
         await query.message.answer_photo(photo=image)
     except: pass
 
