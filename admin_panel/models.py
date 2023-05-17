@@ -21,3 +21,18 @@ class Piece(models.Model):
     class Meta:
         verbose_name = 'Пьеса'
         verbose_name_plural = 'Пьесы'
+
+
+class User(models.Model):
+    tg_id = models.IntegerField(verbose_name='id пользователя в телеграме')
+    full_name = models.TextField(verbose_name='Имя пользователя')
+    username = models.TextField(verbose_name='Юзернейм пользователя при наличии', default='')
+    reg_time = models.DateTimeField(verbose_name='Дата регистрации пользователя')
+    last_time = models.DateTimeField(verbose_name='Дата последнего действия пользователя')
+
+
+class Action(models.Model):
+    msg_id = models.IntegerField(verbose_name='id сообщения в телеграме')
+    msg_name = models.TextField(verbose_name='Название выполненной команды')
+    click_time = models.DateTimeField(verbose_name='время и дата выполненной команды')
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Пользователь который совершил действие')

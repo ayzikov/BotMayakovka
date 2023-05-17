@@ -1,10 +1,12 @@
 import json
 
+from datetime import datetime
+
 from .serializers import PieceSerializerName, PieceSerializerDesc
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .models import Piece
+from .models import Piece, User, Action
 
 def get_dict_from_json(val, request):
     '''Функция преобразования json объекта в dict'''
@@ -82,3 +84,116 @@ class PieceImgView(APIView):
         res = Piece.objects.get(id=id_piece)
         image_path = res.image.path
         return Response(image_path)
+
+
+class UserAddView(APIView):
+    def get(self, request: Request):
+        '''
+        проверяет наличие пользователя в БД
+        :param request:
+        :return:
+        '''
+
+        tg_id = get_dict_from_json(val='tg_id', request=request)
+        try:
+            User.objects.get(tg_id=tg_id)
+            return Response(True)
+        except:
+            return Response(False)
+
+    def post(self, request: Request):
+        '''
+        функция добавляет нового пользователя в БД
+        :param request:
+        :return:
+        '''
+
+        tg_id = get_dict_from_json(val='tg_id', request=request)
+        full_name = get_dict_from_json(val='full_name', request=request)
+        username = get_dict_from_json(val='username', request=request)
+        reg_time = last_time = datetime.now()
+
+        User.objects.create(tg_id=tg_id,
+                            full_name=full_name,
+                            username=username,
+                            reg_time=reg_time,
+                            last_time=last_time)
+
+        return Response('Пользователь создан')
+    def put(self, request: Request):
+        '''
+        функция изменяет пользователю последнее время входа
+        :param request:
+        :return:
+        '''
+
+        tg_id = get_dict_from_json(val='tg_id', request=request)
+        last_time = datetime.now()
+
+        User.objects.filter(tg_id=tg_id).update(last_time=last_time)
+
+        return Response('Время обновлено')
+
+
+class ActionAddView(APIView):
+    def post(self, request: Request):
+        '''
+        функция добавляет действие в БД
+        :param request:
+        :return:
+        '''
+        msg_id = get_dict_from_json(val='msg_id', request=request)
+        msg_name = get_dict_from_json(val='msg_name', request=request)
+        click_time = datetime.now()
+        tg_id = get_dict_from_json(val='tg_id', request=request)
+        user = User.objects.get(tg_id=tg_id)
+
+        Action.objects.create(msg_id=msg_id,
+                              msg_name=msg_name,
+                              click_time=click_time,
+                              user=user)
+
+        return Response('Действие создано')
+
+
+class StatisticsView(APIView):
+    def get(self, request: Request):
+        '''
+        вывод статистики в соответствии с заданными параметрами
+        :param request:
+        :return:
+        '''
+        users = get_dict_from_json(val='users', request=request)
+        actions = get_dict_from_json(val='actions', request=request)
+        comands = get_dict_from_json(val='comands', request=request)
+
+        # вывод статистики пользователей
+        if actions == comands == "None":
+
+            # за все время
+            all_users = User.objects.count()
+
+            # за день
+            today = datetime.now().day
+            day_users = User
+
+            # за неделю
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
