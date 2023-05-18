@@ -1,7 +1,7 @@
 # файлы проекта
 import pathlib
 
-import crud_pieces
+import crud_pieces, crud_statistics
 import keyboards
 import texts
 
@@ -74,6 +74,10 @@ async def main_menu(message: Message):
         Обработчик команды /menu
         Отправляет пользователю главное меню
     """
+
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Главное меню')
+
     # Получаем клавиатуру главного меню
     markup = await keyboards.main_menu_keyboard()
 

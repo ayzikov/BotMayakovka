@@ -1,6 +1,7 @@
 import json
 
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
+
 
 from .serializers import PieceSerializerName, PieceSerializerDesc
 from rest_framework.views import APIView
@@ -8,12 +9,38 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from .models import Piece, User, Action
 
+from django.db.models import Count
+from django.utils import timezone
+
 def get_dict_from_json(val, request):
     '''Функция преобразования json объекта в dict'''
 
     json_data = request.body.decode('utf-8')  # преобразование байтовой строки в строку
     data = json.loads(json_data)  # преобразование JSON-строки в словарь Python
     return data.get(val)  # получение значения по ключу 'val'
+
+
+def get_current_datetime():
+    '''
+    Функция расчитывает конец и начало текущих дня и недели
+    :return: 4 datetime объекта
+    '''
+
+    current_day = datetime.now()
+    start_day = datetime.combine(current_day.date(), time.min)
+    end_day = datetime.combine(current_day.date(), time.max)
+
+    current_week_day = datetime.now().weekday()
+    start_week = datetime.now() - timedelta(days=current_week_day,
+                                            hours=datetime.now().hour,
+                                            minutes=datetime.now().minute,
+                                            seconds=datetime.now().second)
+    end_week = start_week + timedelta(days=6,
+                                      hours=23,
+                                      minutes=59,
+                                      seconds=59)
+
+    return start_day, end_day, start_week, end_week
 
 
 class PieceView(APIView):
@@ -111,7 +138,7 @@ class UserAddView(APIView):
         tg_id = get_dict_from_json(val='tg_id', request=request)
         full_name = get_dict_from_json(val='full_name', request=request)
         username = get_dict_from_json(val='username', request=request)
-        reg_time = last_time = datetime.now()
+        reg_time = last_time = timezone.now()
 
         User.objects.create(tg_id=tg_id,
                             full_name=full_name,
@@ -128,7 +155,7 @@ class UserAddView(APIView):
         '''
 
         tg_id = get_dict_from_json(val='tg_id', request=request)
-        last_time = datetime.now()
+        last_time = timezone.now()
 
         User.objects.filter(tg_id=tg_id).update(last_time=last_time)
 
@@ -144,7 +171,7 @@ class ActionAddView(APIView):
         '''
         msg_id = get_dict_from_json(val='msg_id', request=request)
         msg_name = get_dict_from_json(val='msg_name', request=request)
-        click_time = datetime.now()
+        click_time = timezone.now()
         tg_id = get_dict_from_json(val='tg_id', request=request)
         user = User.objects.get(tg_id=tg_id)
 
@@ -163,29 +190,48 @@ class StatisticsView(APIView):
         :param request:
         :return:
         '''
+
         users = get_dict_from_json(val='users', request=request)
         actions = get_dict_from_json(val='actions', request=request)
         comands = get_dict_from_json(val='comands', request=request)
 
+        start_day, end_day, start_week, end_week = get_current_datetime()
+
         # вывод статистики пользователей
         if actions == comands == "None":
-
             # за все время
             all_users = User.objects.count()
 
             # за день
-            today = datetime.now().day
-            day_users = User
+            day_users = User.objects.filter(last_time__range=(start_day, end_day)).count()
 
             # за неделю
+            week_users = User.objects.filter(last_time__range=(start_week, end_week)).count()
 
+            return Response(f'Всего пользователей: {all_users}\n   '
+                            f'Пользователей за день: {day_users}\n   '
+                            f'Пользователей за неделю: {week_users}')
 
+        # статистика кликов
+        if users == comands == "None":
+            # за все время
+            all_actions = Action.objects.count()
 
+            # за день
+            day_actions = Action.objects.filter(click_time__range=(start_day, end_day)).count()
 
+            # за неделю
+            week_actions = Action.objects.filter(click_time__range=(start_week, end_week)).count()
 
+            return Response(f'Всего кликов: {all_actions}\n   '
+                            f'Кликов за день: {day_actions}\n   '
+                            f'Кликов за неделю: {week_actions}')
 
-
-
+        # статистика конкретных команд
+        if users == actions == "None":
+            clicks = Action.objects.values('msg_name').annotate(count=Count('msg_name'))
+            res_list = {msg["msg_name"]: msg["count"] for msg in clicks}
+            return Response(res_list)
 
 
 
