@@ -114,23 +114,9 @@ class PieceImgView(APIView):
 
 
 class UserAddView(APIView):
-    def get(self, request: Request):
-        '''
-        проверяет наличие пользователя в БД
-        :param request:
-        :return:
-        '''
-
-        tg_id = get_dict_from_json(val='tg_id', request=request)
-        try:
-            User.objects.get(tg_id=tg_id)
-            return Response(True)
-        except:
-            return Response(False)
-
     def post(self, request: Request):
         '''
-        функция добавляет нового пользователя в БД
+        функция проверяет наличие пользователи и добавляет его в БД, если его нет
         :param request:
         :return:
         '''
@@ -138,13 +124,16 @@ class UserAddView(APIView):
         tg_id = get_dict_from_json(val='tg_id', request=request)
         full_name = get_dict_from_json(val='full_name', request=request)
         username = get_dict_from_json(val='username', request=request)
-        reg_time = last_time = timezone.now()
+        reg_time = last_time = datetime.now()
 
-        User.objects.create(tg_id=tg_id,
-                            full_name=full_name,
-                            username=username,
-                            reg_time=reg_time,
-                            last_time=last_time)
+        try:
+            User.objects.get(tg_id=tg_id)
+        except:
+            User.objects.create(tg_id=tg_id,
+                                full_name=full_name,
+                                username=username,
+                                reg_time=reg_time,
+                                last_time=last_time)
 
         return Response('Пользователь создан')
     def put(self, request: Request):
@@ -155,7 +144,7 @@ class UserAddView(APIView):
         '''
 
         tg_id = get_dict_from_json(val='tg_id', request=request)
-        last_time = timezone.now()
+        last_time = datetime.now()
 
         User.objects.filter(tg_id=tg_id).update(last_time=last_time)
 
@@ -171,7 +160,7 @@ class ActionAddView(APIView):
         '''
         msg_id = get_dict_from_json(val='msg_id', request=request)
         msg_name = get_dict_from_json(val='msg_name', request=request)
-        click_time = timezone.now()
+        click_time = datetime.now()
         tg_id = get_dict_from_json(val='tg_id', request=request)
         user = User.objects.get(tg_id=tg_id)
 
@@ -198,7 +187,7 @@ class StatisticsView(APIView):
         start_day, end_day, start_week, end_week = get_current_datetime()
 
         # вывод статистики пользователей
-        if actions == comands == "None":
+        if actions == comands == "False":
             # за все время
             all_users = User.objects.count()
 
@@ -208,12 +197,12 @@ class StatisticsView(APIView):
             # за неделю
             week_users = User.objects.filter(last_time__range=(start_week, end_week)).count()
 
-            return Response(f'Всего пользователей: {all_users}\n   '
-                            f'Пользователей за день: {day_users}\n   '
-                            f'Пользователей за неделю: {week_users}')
+            return Response({'all_users': all_users,
+                            'day_users': day_users,
+                            'week_users': week_users})
 
         # статистика кликов
-        if users == comands == "None":
+        if users == comands == "False":
             # за все время
             all_actions = Action.objects.count()
 
@@ -223,15 +212,15 @@ class StatisticsView(APIView):
             # за неделю
             week_actions = Action.objects.filter(click_time__range=(start_week, end_week)).count()
 
-            return Response(f'Всего кликов: {all_actions}\n   '
-                            f'Кликов за день: {day_actions}\n   '
-                            f'Кликов за неделю: {week_actions}')
+            return Response({'all_actions': all_actions,
+                            'day_actions': day_actions,
+                            'week_actions': week_actions})
 
         # статистика конкретных команд
-        if users == actions == "None":
+        if users == actions == "False":
             clicks = Action.objects.values('msg_name').annotate(count=Count('msg_name'))
-            res_list = {msg["msg_name"]: msg["count"] for msg in clicks}
-            return Response(res_list)
+            res_dict = {msg["msg_name"]: msg["count"] for msg in clicks}
+            return Response(res_dict)
 
 
 

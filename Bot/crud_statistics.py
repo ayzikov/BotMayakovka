@@ -20,29 +20,22 @@ async def action(tg_id: int, full_name: str, username: str, msg_name: str, msg_i
 
     # из БД запришиваются id всех пользователей и если id этого пользователя не присутствует в БД, то создается новый пользователь
     # запрос возвращает True если пользователь существует и False в противном случае
-    data = {}
+
+    data = {'tg_id': tg_id, 'full_name': full_name, 'username': username}
     json_data = json.dumps(data)
     async with ClientSession() as session:
-        async with session.get('http://127.0.0.1:8000/user/', data=json_data) as response:
+        async with session.post('http://127.0.0.1:8000/user/', data=json_data) as response:
 
-            # если пользователя нет, то создаем
-            if not response:
-                data = {'tg_id': tg_id, 'full_name': full_name, 'username': username}
-                json_data = json.dumps(data)
-                async with ClientSession() as session:
-                    async with session.post('http://127.0.0.1:8000/user/', data=json_data) as response:
-
-                        print(response)
+            print(response)
 
 
-            # если пользователь уже был, то обновляем ему last_time
-            else:
-                data = {'tg_id': tg_id}
-                json_data = json.dumps(data)
-                async with ClientSession() as session:
-                    async with session.put('http://127.0.0.1:8000/user/', data=json_data) as response:
+    # если пользователь уже был, то обновляем ему last_time
+    data = {'tg_id': tg_id}
+    json_data = json.dumps(data)
+    async with ClientSession() as session:
+        async with session.put('http://127.0.0.1:8000/user/', data=json_data) as response:
 
-                        print(response)
+            print(response)
 
 
     # сюда передается id пользователя, id сообщения и название кнопки
@@ -59,6 +52,16 @@ async def action(tg_id: int, full_name: str, username: str, msg_name: str, msg_i
 async def statistic(message, msg_name):
     await action(tg_id=message.from_user.id,
                  full_name=message.from_user.full_name,
-                 username=message.from_user.username,
+                 username=message.from_user.username if message.from_user.username else '',
                  msg_id=message.message_id,
                  msg_name=msg_name)
+
+
+async def get_statistics(users: str, actions: str, comands: str):
+    data = {'users': users, 'actions': actions, 'comands': comands}
+    json_data = json.dumps(data)
+    async with ClientSession() as session:
+        async with session.get('http://127.0.0.1:8000/statistics/', data=json_data) as response:
+
+            response = await response.json()
+            return response
