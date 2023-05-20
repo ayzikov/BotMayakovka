@@ -20,3 +20,24 @@ text_sources = 'Источники информации:\n\n' \
                '· https://ru.wikipedia.org/wiki/\n\n' \
                '· http://ostrovskiy.lit-info.ru/\n\n' \
                '· https://www.sberbank.com/promo/kandinsky\n\n'
+
+
+async def text_user_stats(res: dict):
+    return f'Статистика по количеству пользователй\n\n' \
+           f'{res["all_users"]} - Пользователей за все время\n' \
+           f'{res["day_users"]} - Пользователей за день\n' \
+           f'{res["week_users"]} - Пользователей за неделю'
+
+
+async def text_actions_stats(res: dict):
+    return f'Статистика по количеству кликов\n\n' \
+           f'{res["all_actions"]} - Кликов за все время\n' \
+           f'{res["day_actions"]} - Кликов за день\n' \
+           f'{res["week_actions"]} - Кликов за неделю'
+
+
+async def text_comands_stats(res: dict):
+    sort_res_tuples = sorted(res.items(), key=lambda el: el[1], reverse=True)
+    res_list = "\n".join([f'{value} - {comand}' for comand, value in sort_res_tuples])
+    return f'Статистика по командам\n\n' \
+           f'{res_list}'

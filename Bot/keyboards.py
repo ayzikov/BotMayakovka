@@ -116,3 +116,19 @@ async def go_play_piece_inline_keyboard(id_piece):
     builder.add(InlineKeyboardButton(text='Назад', callback_data=CBF_Pieces(action='get_piece',
                                                                             id_piece=id_piece).pack()))
     return builder.as_markup()
+
+
+async def admin_keyboard():
+    markup = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text='Пользователи'),
+            KeyboardButton(text='Клики')],
+
+            [KeyboardButton(text='Команды'),
+            KeyboardButton(text='Логи')],
+            [KeyboardButton(text='Главное меню')]
+        ],
+        resize_keyboard=True,
+        is_persistent=True)
+
+    return markup

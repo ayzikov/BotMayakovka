@@ -7,6 +7,7 @@ import texts
 
 from CBFactories import CBF_Pieces
 
+
 # отдельные импорты
 import logging
 import asyncio
@@ -43,6 +44,11 @@ logging.basicConfig(level=logging.INFO,
                     filemode='w',
                     format= '%(asctime)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S %Z')
+
+# logging.basicConfig(level=logging.INFO)
+
+# регистрация хендлеров из других файлов
+
 
 
 # Функция, которая будет вызываться при получении команды /start
@@ -88,6 +94,9 @@ async def main_menu(message: Message):
 
 @dp.message(Command(commands=['sources']))
 async def sources(message: Message):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Источники')
+
     text = texts.text_sources
     await message.answer(text=text, disable_web_page_preview=True)
 
@@ -95,6 +104,9 @@ async def sources(message: Message):
 #ОБРАБОТКА КНОПОК ГЛАВНОГО МЕНЮ
 @dp.message(Text(text='Хочу узнать про все пьесы'))
 async def all_pieces(message: Message):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Хочу узнать про все пьесы')
+
     markup = await keyboards.all_pieces_keyboard()
     text = texts.all_pieces_text
     await message.answer(text=text, reply_markup=markup)
@@ -102,6 +114,9 @@ async def all_pieces(message: Message):
 
 @dp.message(Text(text='Хочу пьесу под настроение'))
 async def mood_pieces(message: Message):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Хочу пьесу под настроение')
+
     markup = await keyboards.mood_pieces_keyboard()
     text = texts.mood_pieces_text
     await message.answer(text=text, reply_markup=markup)
@@ -109,6 +124,9 @@ async def mood_pieces(message: Message):
 
 @dp.message(Text(text='Авторы'))
 async def about_authors(message: Message):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Авторы')
+
     # получаем полный путь к изображению
     current_path = pathlib.Path(__file__).resolve().parents[1]
     photo_path = Path(current_path, 'media', 'images', 'authors.jpg')
@@ -126,6 +144,9 @@ async def about_authors(message: Message):
 # в последующем эти действия повторяются для всех кнопок вывода списка пьес
 @dp.message(Text(text='По алфавиту'))
 async def sort_alphabet_pieces(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='По алфавиту')
+
     await state.update_data(sort_by='name',
                             genre=None,
                             text=texts.alphabet_text)
@@ -137,6 +158,9 @@ async def sort_alphabet_pieces(message: Message, state: FSMContext):
 
 @dp.message(Text(text='По дате'))
 async def sort_date_pieces(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='По дате')
+
     await state.update_data(sort_by='date',
                             genre=None,
                             text=texts.date_text)
@@ -149,6 +173,9 @@ async def sort_date_pieces(message: Message, state: FSMContext):
 
 @dp.message(Text(text='Случайная пьеса'))
 async def random_piece(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Случайная пьеса')
+
     id_piece = await crud_pieces.get_random_piece()
 
     # получили данные о пьесе в виде словаря
@@ -177,6 +204,9 @@ async def random_piece(message: Message, state: FSMContext):
 #ОБРАБОТКА КНОПОК МЕНЮ (пьесы под настроение)
 @dp.message(Text(text='Комедии'))
 async def comedy_piece(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Комедии')
+
     await state.update_data(sort_by='genre',
                             genre='Комедия',
                             text=texts.comedi_text)
@@ -189,6 +219,9 @@ async def comedy_piece(message: Message, state: FSMContext):
 
 @dp.message(Text(text='Драмы'))
 async def dramas_piece(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Драмы')
+
     await state.update_data(sort_by='genre',
                             genre='Драма',
                             text=texts.drama_text)
@@ -201,6 +234,9 @@ async def dramas_piece(message: Message, state: FSMContext):
 
 @dp.message(Text(text='Малоизвестные пьесы'))
 async def non_popular_piece(message: Message, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=message, msg_name='Малоизвестные пьесы')
+
     await state.update_data(sort_by='non_popular',
                             genre=None,
                             text=texts.non_popular_text)
@@ -221,6 +257,10 @@ async def page_selection(query: CallbackQuery, callback_data: CBF_Pieces, state:
     в keyboard передается номер страницы с пьесами которые нужно вывести и сообщение редактируется
     так как на данном моменте у пользователя висит в чате инлайн клавиатура 
     '''
+
+    # данные для статистики
+    await crud_statistics.statistic(message=query.message, msg_name='Клик по странице')
+
     data = await state.get_data()
 
     list_dicts_pieces = await crud_pieces.get_pieces_sort(sort_by=data['sort_by'],
@@ -234,9 +274,9 @@ async def page_selection(query: CallbackQuery, callback_data: CBF_Pieces, state:
 # при нажатии на пьесу
 @dp.callback_query(CBF_Pieces.filter(F.action=='get_piece'))
 async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
-    '''
+    # данные для статистики
+    await crud_statistics.statistic(message=query.message, msg_name='Выбор пьесы')
 
-    '''
     # получили данные о пьесе в виде словаря
     dict_info_piece = await crud_pieces.piece_info_by_id(callback_data.id_piece)
 
@@ -260,6 +300,9 @@ async def get_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state:
 # при нажатии на "Сюжет"
 @dp.callback_query(CBF_Pieces.filter(F.action=='detail'))
 async def get_detail_piece_info(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=query.message, msg_name='Сюжет')
+
     data = await state.get_data()                           # данные из состояния
     dict_info_piece = data['dict_info_piece']               # словарь с информацией о пьесе
     text = dict_info_piece['description_piece_detailed']    # текс "Подробнее"
@@ -274,6 +317,9 @@ async def get_detail_piece_info(query: CallbackQuery, callback_data: CBF_Pieces,
 # при нажатии на "О постановке"
 @dp.callback_query(CBF_Pieces.filter(F.action=='info_play'))
 async def about_play(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=query.message, msg_name='О постановке')
+
     data = await state.get_data()               # данные из состояния
     dict_info_piece = data['dict_info_piece']   # словарь с информацией о пьесе
     text = dict_info_piece['description_play']  # текс "О постановке"
@@ -288,6 +334,9 @@ async def about_play(query: CallbackQuery, callback_data: CBF_Pieces, state: FSM
 # при нажатии на "Сходить на постановку"
 @dp.callback_query(CBF_Pieces.filter(F.action=='go_play'))
 async def links_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FSMContext):
+    # данные для статистики
+    await crud_statistics.statistic(message=query.message, msg_name='Сходить на постановку')
+
     data = await state.get_data()  # данные из состояния
     dict_info_piece = data['dict_info_piece']  # словарь с информацией о пьесе
     link_play = dict_info_piece['link_play']
@@ -308,6 +357,62 @@ async def links_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FS
 
     await query.message.answer(text=text, reply_markup=markup, disable_web_page_preview=True)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# АДМИН ПАНЕЛЬ
+@dp.message(Text(text='Админка'))
+async def get_admin_panel(message: Message):
+    allowed_ids = [1696030350]
+    if message.from_user.id in allowed_ids:
+        markup = await keyboards.admin_keyboard()
+        await message.answer(text='Админ панель', reply_markup=markup)
+
+
+@dp.message(Text(text='Пользователи'))
+async def get_users_stats(message: Message):
+    allowed_ids = [1696030350]
+    if message.from_user.id in allowed_ids:
+        res = await crud_statistics.get_statistics(users='True',
+                                                   actions='False',
+                                                   comands='False'
+                                                   )
+        text = await texts.text_user_stats(res)
+        await message.answer(text=text)
+
+@dp.message(Text(text='Клики'))
+async def get_actions_stats(message: Message):
+    allowed_ids = [1696030350]
+    if message.from_user.id in allowed_ids:
+        res = await crud_statistics.get_statistics(users='False',
+                                                   actions='True',
+                                                   comands='False'
+                                                   )
+        text = await texts.text_actions_stats(res)
+        await message.answer(text=text)
+
+
+@dp.message(Text(text='Команды'))
+async def get_comands_stats(message: Message):
+    allowed_ids = [1696030350]
+    if message.from_user.id in allowed_ids:
+        res = await crud_statistics.get_statistics(users='False',
+                                                   actions='False',
+                                                   comands='True'
+                                                   )
+        text = await texts.text_comands_stats(res)
+        await message.answer(text=text)
+
+
+@dp.message(Text(text='Логи'))
+async def get_logs_file(message: Message):
+    allowed_ids = [1696030350]
+    if message.from_user.id in allowed_ids:
+        # получаем полный путь к log файлу
+        current_path = pathlib.Path(__file__).resolve().parents[0]
+        log_path = Path(current_path, 'bot_log.txt')
+
+        # получаем log файл
+        log = FSInputFile(log_path)
+        await message.answer_document(document=log)
 #-----------------------------------------------------------------------------------------------------------------------
 async def main() -> None:
     await dp.start_polling(bot)
