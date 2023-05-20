@@ -361,7 +361,7 @@ async def links_piece(query: CallbackQuery, callback_data: CBF_Pieces, state: FS
 # АДМИН ПАНЕЛЬ
 @dp.message(Text(text='Админка'))
 async def get_admin_panel(message: Message):
-    allowed_ids = [1696030350]
+    allowed_ids = map(int, os.getenv('ALLOWED_IDS').split(','))
     if message.from_user.id in allowed_ids:
         markup = await keyboards.admin_keyboard()
         await message.answer(text='Админ панель', reply_markup=markup)
@@ -369,7 +369,7 @@ async def get_admin_panel(message: Message):
 
 @dp.message(Text(text='Пользователи'))
 async def get_users_stats(message: Message):
-    allowed_ids = [1696030350]
+    allowed_ids = map(int, os.getenv('ALLOWED_IDS').split(','))
     if message.from_user.id in allowed_ids:
         res = await crud_statistics.get_statistics(users='True',
                                                    actions='False',
@@ -380,7 +380,7 @@ async def get_users_stats(message: Message):
 
 @dp.message(Text(text='Клики'))
 async def get_actions_stats(message: Message):
-    allowed_ids = [1696030350]
+    allowed_ids = map(int, os.getenv('ALLOWED_IDS').split(','))
     if message.from_user.id in allowed_ids:
         res = await crud_statistics.get_statistics(users='False',
                                                    actions='True',
@@ -392,7 +392,7 @@ async def get_actions_stats(message: Message):
 
 @dp.message(Text(text='Команды'))
 async def get_comands_stats(message: Message):
-    allowed_ids = [1696030350]
+    allowed_ids = map(int, os.getenv('ALLOWED_IDS').split(','))
     if message.from_user.id in allowed_ids:
         res = await crud_statistics.get_statistics(users='False',
                                                    actions='False',
@@ -404,7 +404,7 @@ async def get_comands_stats(message: Message):
 
 @dp.message(Text(text='Логи'))
 async def get_logs_file(message: Message):
-    allowed_ids = [1696030350]
+    allowed_ids = map(int, os.getenv('ALLOWED_IDS').split(','))
     if message.from_user.id in allowed_ids:
         # получаем полный путь к log файлу
         current_path = pathlib.Path(__file__).resolve().parents[0]
