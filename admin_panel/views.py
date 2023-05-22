@@ -1,5 +1,5 @@
 import json
-import pytz
+
 
 from datetime import datetime, date, time, timedelta
 
@@ -13,8 +13,6 @@ from .models import Piece, User, Action
 from django.db.models import Count
 from django.utils import timezone
 
-# timezone для получения текущего времени
-timezone = pytz.timezone('Europe/Moscow')
 
 def get_dict_from_json(val, request):
     '''Функция преобразования json объекта в dict'''
@@ -30,15 +28,15 @@ def get_current_datetime():
     :return: 4 datetime объекта
     '''
 
-    current_day = datetime.now(timezone)
+    current_day = datetime.now() + timedelta(hours=3)
     start_day = datetime.combine(current_day.date(), time.min)
     end_day = datetime.combine(current_day.date(), time.max)
 
-    current_week_day = datetime.now(timezone).weekday()
-    start_week = datetime.now(timezone) - timedelta(days=current_week_day,
-                                            hours=datetime.now(timezone).hour,
-                                            minutes=datetime.now(timezone).minute,
-                                            seconds=datetime.now(timezone).second)
+    current_week_day = datetime.now().weekday()
+    start_week = datetime.now() + timedelta(hours=3) - timedelta(days=current_week_day,
+                                            hours=datetime.now() + timedelta(hours=3).hour,
+                                            minutes=datetime.now() + timedelta(hours=3).minute,
+                                            seconds=datetime.now() + timedelta(hours=3).second)
     end_week = start_week + timedelta(days=6,
                                       hours=23,
                                       minutes=59,
@@ -128,7 +126,7 @@ class UserAddView(APIView):
         tg_id = get_dict_from_json(val='tg_id', request=request)
         full_name = get_dict_from_json(val='full_name', request=request)
         username = get_dict_from_json(val='username', request=request)
-        reg_time = last_time = datetime.now(timezone)
+        reg_time = last_time = datetime.now() + timedelta(hours=3)
 
         try:
             User.objects.get(tg_id=tg_id)
@@ -148,7 +146,7 @@ class UserAddView(APIView):
         '''
 
         tg_id = get_dict_from_json(val='tg_id', request=request)
-        last_time = datetime.now(timezone)
+        last_time = datetime.now() + timedelta(hours=3)
 
         User.objects.filter(tg_id=tg_id).update(last_time=last_time)
 
@@ -164,7 +162,7 @@ class ActionAddView(APIView):
         '''
         msg_id = get_dict_from_json(val='msg_id', request=request)
         msg_name = get_dict_from_json(val='msg_name', request=request)
-        click_time = datetime.now(timezone)
+        click_time = datetime.now() + timedelta(hours=3)
         tg_id = get_dict_from_json(val='tg_id', request=request)
         user = User.objects.get(tg_id=tg_id)
 
