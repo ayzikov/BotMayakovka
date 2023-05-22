@@ -34,9 +34,9 @@ def get_current_datetime():
 
     current_week_day = datetime.now().weekday()
     start_week = datetime.now() + timedelta(hours=3) - timedelta(days=current_week_day,
-                                            hours=datetime.now() + timedelta(hours=3).hour,
-                                            minutes=datetime.now() + timedelta(hours=3).minute,
-                                            seconds=datetime.now() + timedelta(hours=3).second)
+                                            hours=(datetime.now() + timedelta(hours=3)).hour,
+                                            minutes=(datetime.now() + timedelta(hours=3)).minute,
+                                            seconds=(datetime.now() + timedelta(hours=3)).second)
     end_week = start_week + timedelta(days=6,
                                       hours=23,
                                       minutes=59,
