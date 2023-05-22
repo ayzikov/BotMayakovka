@@ -1,6 +1,5 @@
 import crud_pieces
 
-hello_text = 'Бот расскажет тебе о пьесе и подскажет, где посмотреть постановку'
 all_pieces_text = 'Здесь ты можешь выбрать порядок знакомства с пьесами или предоставить право выбора его величеству рандому'
 mood_pieces_text = 'Специфический юмор XIX века или трагедия, разрывающая душу, решать тебе'
 alphabet_text = 'Так ты намного быстрее найдешь нужную пьесу'
@@ -21,6 +20,10 @@ text_sources = 'Источники информации:\n\n' \
                '· http://ostrovskiy.lit-info.ru/\n\n' \
                '· https://www.sberbank.com/promo/kandinsky\n\n'
 
+
+async def hello_text(name):
+    return f'Привет {name}!\n' \
+           f'Этот бот расскажет тебе о пьесе и подскажет, где посмотреть постановку'
 
 async def text_user_stats(res: dict):
     return f'Статистика по количеству пользователй\n\n' \

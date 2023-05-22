@@ -38,17 +38,18 @@ storage = MemoryStorage()
 bot = Bot(token)
 dp = Dispatcher(storage=storage)
 
+
+# путь для log файла
+current_path = pathlib.Path(__file__).resolve().parents[0]
+
 # запись логов в файл
 logging.basicConfig(level=logging.INFO,
-                    filename='bot_log.txt',
+                    filename=f'{current_path}/bot_log.txt',
                     filemode='w',
                     format= '%(asctime)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S %Z')
 
 # logging.basicConfig(level=logging.INFO)
-
-# регистрация хендлеров из других файлов
-
 
 
 # Функция, которая будет вызываться при получении команды /start
@@ -62,7 +63,12 @@ async def hello_message(message: Message):
     markup = await keyboards.main_menu_keyboard()
 
     # Получаем текст приветственного сообщения
-    text = texts.hello_text
+    try:
+        name = message.from_user.full_name
+    except:
+        name = 'Анонимус'
+
+    text = await texts.hello_text(name=name)
 
     # получаем полный путь к гиф изображению
     current_path = pathlib.Path(__file__).resolve().parents[1]
